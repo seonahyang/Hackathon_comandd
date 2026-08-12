@@ -1,0 +1,15 @@
+# 버전을 고정하지 않고 하한만 둡니다 (파이썬 3.11~3.13 어디서든 설치되도록)
+fastapi>=0.110
+uvicorn[standard]>=0.27
+SQLAlchemy>=2.0.25
+pydantic>=2.6
+pydantic-settings>=2.2
+python-dotenv>=1.0
+httpx>=0.27
+
+# Supabase Auth JWT 검증 (구글/카카오 로그인). crypto는 ES256/RS256 서명 검증용
+PyJWT[crypto]>=2.9
+
+# PostgreSQL/Supabase 연결용. SQLite만 쓸 거면 없어도 됩니다.
+# 설치가 실패하면 이 줄만 지우고 나머지를 설치하세요.
+psycopg2-binary>=2.9.9
