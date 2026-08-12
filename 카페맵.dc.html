@@ -84,6 +84,7 @@ textarea{font-family:Pretendard,sans-serif}
 <!-- 카카오맵. 로딩 실패 시 투명하게 남고 위 SVG 가 폴백으로 보인다 -->
 <div id="kakao-map" style="position:absolute;inset:0;z-index:2"></div>
 <div style="{{ mapWarn }}">{{ mapWarnText }}</div>
+<div style="{{ authWarn }}">{{ authNote }}</div>
 
 
 <sc-for list="{{ markers }}" as="m" hint-placeholder-count="6">
@@ -792,7 +793,7 @@ class Component extends DCLogic {
   state = {
     active: [], selected: 's1', expanded: null, sheet: 'peek',
     savedIds: ['s1','s2','s4','s6'], focus: null, screen: 'map', menu: false, done: false, walletTab: 'ledger', alarm: true, loggedIn: false, provider: '', signing: '',
-    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', points: 12400, month: 2200, reviewCount: 12,
+    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', points: 12400, month: 2200, reviewCount: 12,
     ledger: BASE_LEDGER, lastEarned: 0, withdraw: false, wdAmount: 10000,
   };
   listRef = React.createRef();
@@ -800,6 +801,17 @@ class Component extends DCLogic {
   /* ══ 백엔드에서 실제 매장을 받아온다 ═══════════════════════════════
      실패하면 아무것도 하지 않는다 → DEMO_STORES 가 그대로 남아 화면은 살아있다. */
   componentDidMount() {
+    // 로그인 후 돌아왔을 때 URL 에 뭐가 실려왔는지 먼저 붙잡아 둔다.
+    // supabase-js 가 처리하면서 URL 을 지워버리기 때문에 나중에는 못 본다.
+    const q = new URLSearchParams(location.search);
+    const h = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+    this._authReturn = {
+      code: q.get('code'),
+      error: q.get('error') || h.get('error'),
+      desc: q.get('error_description') || h.get('error_description'),
+      token: h.get('access_token'),
+    };
+
     fetch(API + '/api/auth/config')
       .then(r => r.json())
       .then(cfg => {
@@ -807,13 +819,41 @@ class Component extends DCLogic {
         if (cfg.supabase_url && cfg.supabase_anon_key && window.supabase) {
           SB = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
           SB.auth.onAuthStateChange((_e, sess) => { if (sess) this.syncMe(); });
+          window.__SB = SB;              // 콘솔에서 확인할 수 있게 노출
         }
-        // 지도 키도 백엔드가 내려준다 → HTML 에 키를 박아둘 필요가 없다
         this.initMap(cfg.kakao_js_key);
-        return getToken();
+
+        if (!SB) return null;
+
+        // Supabase 가 거부한 경우 이유를 화면에 띄운다 (예전엔 조용히 실패했다)
+        if (this._authReturn.error) {
+          this.setState({ authNote: 'Supabase 거부: ' + this._authReturn.error
+            + (this._authReturn.desc ? ' — ' + decodeURIComponent(this._authReturn.desc) : '') });
+          return null;
+        }
+
+        // PKCE 코드가 왔으면 직접 교환한다.
+        // detectSessionInUrl 자동 처리는 클라이언트 생성 시점에 URL 이 이미
+        // 바뀌어 있으면 놓친다. 명시적으로 부르는 편이 확실하다.
+        if (this._authReturn.code) {
+          return SB.auth.exchangeCodeForSession(this._authReturn.code)
+            .then(({ error }) => {
+              if (error) this.setState({ authNote: '세션 교환 실패: ' + error.message });
+              else history.replaceState({}, '', location.pathname);   // 주소창 정리
+            })
+            .catch(e => this.setState({ authNote: '세션 교환 오류: ' + e.message }));
+        }
+        return null;
       })
-      .then(tk => { if (tk || !AUTH_REQUIRED) this.syncMe(); })
-      .catch(() => {});
+      .then(() => getToken())
+      .then(tk => {
+        if (tk || !AUTH_REQUIRED) return this.syncMe();
+        // 로그인하고 돌아왔는데 토큰이 없으면 원인을 알려준다
+        if (this._authReturn && (this._authReturn.code || this._authReturn.token)) {
+          this.setState({ authNote: '토큰을 받았지만 세션 저장에 실패했습니다' });
+        }
+      })
+      .catch(e => this.setState({ authNote: '로그인 확인 실패: ' + e.message }));
 
     this.loadStores();
   }
@@ -992,7 +1032,10 @@ class Component extends DCLogic {
           })) : BASE_LEDGER,
         });
       }).catch(() => {});
-    }).catch(() => { this.setState({ signing: '' }); });
+    }).catch(e => {
+      // 401 이면 백엔드가 토큰을 거부한 것. 조용히 넘기면 원인을 못 찾는다.
+      this.setState({ signing: '', authNote: '내 정보 조회 실패: ' + e.message });
+    });
   }
   cashback() {
     if (this.state.receipt !== 'ok') return 0;
@@ -1258,6 +1301,12 @@ class Component extends DCLogic {
       mapWarn: st.mapError
         ? 'position:absolute;z-index:8;left:14px;right:14px;top:118px;padding:10px 12px;'
           + 'border-radius:12px;background:rgba(226,98,47,.94);color:#fff;'
+          + 'font:700 11.5px/1.5 Pretendard,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18)'
+        : 'display:none',
+      authNote: st.authNote || '',
+      authWarn: st.authNote
+        ? 'position:absolute;z-index:9;left:14px;right:14px;top:168px;padding:10px 12px;'
+          + 'border-radius:12px;background:rgba(47,109,246,.95);color:#fff;'
           + 'font:700 11.5px/1.5 Pretendard,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18)'
         : 'display:none',
       mapWarnText: st.mapError === 'KAKAO_JS_KEY 미설정'
