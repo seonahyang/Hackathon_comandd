@@ -835,7 +835,9 @@ class Component extends DCLogic {
   state = {
     active: [], selected: 's1', expanded: null, sheet: 'peek',
     savedIds: ['s1','s2','s4','s6'], focus: null, screen: 'map', menu: false, done: false, walletTab: 'ledger', alarm: true, loggedIn: false, provider: '', signing: '',
-    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', email: '', restoring: false, points: 12400, month: 2200, reviewCount: 12,
+    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', email: '',
+    // 주소에 OAuth 응답이 실려 있으면 첫 렌더부터 '로그인 중' 화면으로 시작한다.
+    restoring: /access_token=|[?&]code=/.test(location.hash + location.search), points: 12400, month: 2200, reviewCount: 12,
     ledger: BASE_LEDGER, lastEarned: 0, withdraw: false, wdAmount: 10000,
   };
   listRef = React.createRef();
@@ -857,15 +859,10 @@ class Component extends DCLogic {
     // 로그인 후 돌아왔을 때 URL 에 뭐가 실려왔는지 무조건 화면에 남긴다.
     // (조건부로만 띄웠더니 '아무것도 안 뜬다'가 반복돼 원인을 못 좁혔다)
     // 로그인을 아직 안 눌렀으면 표시하지 않는다.
-    // 로그인하고 막 돌아온 상태면 스피너를 먼저 띄운다.
-    // (componentDidMount 는 첫 렌더 뒤에 돌기 때문에 state 를 직접 넣는다)
-    if ((location.hash || location.search) && !this._authReturn.error) {
-      this.state.restoring = true;
-    }
-
     // Supabase 가 오류를 실어 보냈을 때만 화면에 남긴다.
     // (진단용으로 항상 띄우던 건 원인을 찾았으니 껐다)
     if (this._authReturn.error) {
+      this.state.restoring = false;      // 실패면 스피너 대신 로그인 화면을 보여준다
       this.state.authNote = '로그인 실패: '
         + decodeURIComponent(this._authReturn.desc || this._authReturn.error);
     }
@@ -1286,7 +1283,7 @@ class Component extends DCLogic {
       // 이게 없으면 로그인 창이 잠깐 다시 보였다가 앱으로 들어가서
       // '로그인이 안 된 건가?' 하고 한 번 더 누르게 된다.
       restoreScrim: st.restoring
-        ? 'position:absolute;z-index:80;inset:0;background:#fdf8ef;display:flex;'
+        ? 'position:absolute;z-index:90;inset:0;background:#fff;display:flex;'
           + 'flex-direction:column;align-items:center;justify-content:center'
         : 'display:none',
       kakaoLabel: st.signing === 'kakao' ? '카카오 연결 중…' : '카카오로 계속하기',
