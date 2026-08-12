@@ -394,6 +394,7 @@ textarea{font-family:Pretendard,sans-serif}
 <button onClick="{{ tabLedger }}" style="{{ tabLedgerStyle }}">적립 내역</button>
 <button onClick="{{ tabReviews }}" style="{{ tabReviewsStyle }}">내 리뷰</button>
 </div>
+<div style="{{ ledgerEmptyStyle }}">{{ ledgerEmptyText }}</div>
 <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
 <sc-for list="{{ ledger }}" as="h" hint-placeholder-count="5">
 <div style="padding:14px 16px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.09);display:flex;align-items:center;gap:12px">
@@ -670,6 +671,45 @@ function crowdOf(s) {
   if (s.crowd && CROWD[s.crowd]) return s.crowd;
   if (s.distHot == null) return CROWD_OF[s.id] || 'mid';
   return s.distHot >= 5 ? 'low' : s.distHot <= 1.5 ? 'high' : 'mid';
+}
+
+/* 업로드 전에 사진을 줄인다.
+   Vercel 서버리스는 요청 본문을 4.5MB 까지만 받는데(413), 요즘 폰 사진은
+   5~10MB 라 그냥 보내면 서버에 닿지도 못한다.
+   OCR 정확도는 긴 변 1600px 이면 충분하다 — 그 이상은 파일만 커지고
+   인식률은 거의 안 오른다. */
+function shrinkImage(file, maxSide, quality) {
+  maxSide = maxSide || 1600;
+  quality = quality || 0.8;
+
+  return new Promise((resolve) => {
+    // 이미 작으면 그대로 쓴다
+    if (file.size <= 1.5 * 1024 * 1024) return resolve(file);
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+
+      cv.toBlob((blob) => {
+        // 줄였는데 오히려 커졌으면(드물게) 원본을 쓴다
+        resolve(blob && blob.size < file.size
+          ? new File([blob], 'receipt.jpg', { type: 'image/jpeg' })
+          : file);
+      }, 'image/jpeg', quality);
+    };
+
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
 }
 
 /* supabase-js 를 직접 불러온다.
@@ -1096,6 +1136,11 @@ class Component extends DCLogic {
         nickname: me.nickname,
         email: me.email || '',
         points: me.point_balance,
+        // 목업 기본값(12,400P·리뷰 12개·이번달 2,200P)이 남아 있으면
+        // 실제 계정인데 남의 실적이 보인다. 로그인 시점에 정리한다.
+        month: 0,
+        reviewCount: 0,
+        ledger: [],
       });
       return call('/api/users/' + me.id + '/points').then(p => {
         this.setState({
@@ -1106,7 +1151,10 @@ class Component extends DCLogic {
             sub: (h.created_at || '').slice(0, 10) + (h.amount > 0 ? ' · 적립' : ' · 사용'),
             amount: h.amount,
             kind: h.amount > 0 ? (h.amount > 500 ? 'reward' : 'plain') : 'spend',
-          })) : BASE_LEDGER,
+          })) : [],
+          // 이력이 없으면 빈 목록으로 둔다. 예전엔 목업 더미(BASE_LEDGER)로
+          // 채워서, 실제 계정인데 남의 리뷰 내역이 보이는 상태였다.
+          ledgerEmpty: p.history.length === 0,
         });
       }).catch(() => {});
     }).catch(e => {
@@ -1142,28 +1190,46 @@ class Component extends DCLogic {
       if (!file) return;
       this.setState({ receipt: 'scanning', receiptSource: source, receiptError: '' });
 
-      const store = this.store(this.state.reviewStore);
-      const fd = new FormData();
-      fd.append('file', file);
-      if (store && store.cafeId) fd.append('cafe_id', String(store.cafeId));
+      this.sendReceipt(file);
+    };
 
-      fetch(API + '/api/receipts', { method: 'POST', body: fd })
-        .then(res => res.json().then(b => ({ ok: res.ok, status: res.status, body: b })))
-        .then(({ ok, status, body }) => {
+    input.click();
+  }
+
+  /* 영수증 업로드. amount 를 주면 OCR 대신 그 금액으로 처리한다. */
+  sendReceipt(file, amount) {
+    this.setState({ receipt: 'scanning', receiptError: '' });
+
+    const store = this.store(this.state.reviewStore);
+
+    return shrinkImage(file).then(small => {
+      const fd = new FormData();
+      fd.append('file', small);
+      if (store && store.cafeId) fd.append('cafe_id', String(store.cafeId));
+      if (amount) fd.append('amount', String(amount));
+
+      return fetch(API + '/api/receipts', { method: 'POST', body: fd });
+    })
+      .then(res => res.json().then(b => ({ ok: res.ok, status: res.status, body: b })))
+      .then(({ ok, status, body }) => {
           if (!ok) {
-            // 422 = 다시 찍으면 해결됨 / 503 = 서버·설정 문제
             // FastAPI 의 유효성 오류는 detail 이 배열(객체 목록)로 온다.
             // 그대로 찍으면 사용자 화면에 JSON 덩어리가 노출된다.
             const d = body.detail;
-            const msg = typeof d === 'string' ? d
+            let msg = typeof d === 'string' ? d
               : Array.isArray(d) ? (d[0] && d[0].msg ? d[0].msg : '요청 형식이 올바르지 않아요')
               : '영수증 인식에 실패했어요';
-            this.setState({
-              receipt: 'none',
-              receiptError: status === 503
-                ? msg + ' (관리자 확인 필요)'
-                : msg,
-            });
+            if (status === 413) msg = '사진 용량이 너무 큽니다. 더 작게 찍어주세요';
+
+            // 인식에 실패하면 금액을 직접 넣을 기회를 준다.
+            // 영수증은 조명·구김·프린터 상태에 따라 실패율이 꽤 되는데,
+            // 그때마다 포기시키면 정상 이용자만 손해다.
+            const typed = prompt(
+              msg + '\n\n영수증에 적힌 결제 금액을 숫자로 입력해 주세요 (건너뛰려면 취소)');
+            const won = parseInt((typed || '').replace(/[^0-9]/g, ''), 10);
+            if (won > 0) return this.sendReceipt(file, won);
+
+            this.setState({ receipt: 'none', receiptError: msg });
             return;
           }
           this.setState({
@@ -1175,13 +1241,10 @@ class Component extends DCLogic {
             receiptError: body.store_matched === false ? body.message : '',
           });
         })
-        .catch(err => this.setState({
-          receipt: 'none',
-          receiptError: '업로드에 실패했어요: ' + err.message,
-        }));
-    };
-
-    input.click();
+      .catch(err => this.setState({
+        receipt: 'none',
+        receiptError: '업로드에 실패했어요: ' + err.message,
+      }));
   }
   submit() {
     // 영수증은 캐시백 조건일 뿐, 리뷰를 막지 않는다.
@@ -1511,6 +1574,13 @@ class Component extends DCLogic {
         : 'display:none',
       submitStyle: `margin-top:20px;width:100%;padding:17px;border:none;border-radius:999px;font:800 14.5px/1 Pretendard,sans-serif;cursor:${ready ? 'pointer' : 'default'};background:${ready ? ORANGE : '#efe6d6'};color:${ready ? '#fff' : '#c0b5a1'};box-shadow:${ready ? '0 8px 20px rgba(247,135,8,.3)' : 'none'};transition:all .2s`,
 
+      ledgerEmptyStyle: st.ledger.length === 0
+        ? 'margin-top:16px;padding:26px 18px;border-radius:16px;background:#fff;'
+          + 'text-align:center;font:600 12.5px/1.7 Pretendard,sans-serif;color:#a79c8a'
+        : 'display:none',
+      ledgerEmptyText: st.walletTab === 'ledger'
+        ? '아직 적립 내역이 없어요\n외곽 매장에 리뷰를 남기면 최대 3,700P가 쌓입니다'
+        : '아직 작성한 리뷰가 없어요',
       ledger: (st.walletTab === 'ledger' ? st.ledger : st.ledger.filter(h => h.kind !== 'spend')).map(h => ({
         title: h.title, sub: h.sub,
         iconText: h.amount > 0 ? 'P' : '−',

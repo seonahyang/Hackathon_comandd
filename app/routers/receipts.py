@@ -19,7 +19,10 @@ from ..services import clova_ocr as ocr
 
 router = APIRouter(prefix="/api/receipts", tags=["receipts (영수증 인증)"])
 
-MAX_BYTES = 8 * 1024 * 1024      # 요즘 폰 사진이 5MB를 쉽게 넘는다
+# Vercel 서버리스의 요청 본문 상한이 4.5MB 라, 그보다 크게 잡아봐야
+# 우리 코드에 닿기 전에 플랫폼이 413 으로 끊는다. 4MB 로 맞춘다.
+# (프론트가 업로드 전에 1600px 로 줄이므로 보통 300KB 안팎이다)
+MAX_BYTES = 4 * 1024 * 1024
 
 
 def _norm(s: str) -> str:
@@ -57,6 +60,7 @@ def receipt_config():
 async def scan(
     file: UploadFile = File(..., description="영수증 사진 (jpg/png)"),
     cafe_id: int | None = Form(None, description="검증할 매장 id (선택)"),
+    amount: int | None = Form(None, description="수동 입력 금액. OCR 실패 시 대체"),
     db: Session = Depends(get_db),
 ):
     """이미지를 CLOVA 로 보내 파싱 결과를 돌려준다.
@@ -73,12 +77,20 @@ async def scan(
 
     try:
         parsed = ocr.scan_receipt(raw, file.filename or "receipt.jpg")
-    except ocr.OCRUnreadable as e:
-        # 사용자가 다시 찍으면 해결되는 경우
-        raise HTTPException(422, str(e)) from e
-    except ocr.OCRUnavailable as e:
-        # 우리 설정·네트워크 문제. 사용자 탓이 아니므로 문구를 구분한다.
-        raise HTTPException(503, str(e)) from e
+    except (ocr.OCRUnreadable, ocr.OCRUnavailable) as e:
+        # OCR 이 실패해도 사용자가 금액을 직접 적었으면 그걸로 진행한다.
+        #
+        # 영수증 인식은 편의 기능이지 관문이 아니다. 조명·구김·프린터 상태에 따라
+        # 실패율이 꽤 되는데, 그때마다 캐시백을 못 받게 하면 정상 이용자만 손해다.
+        # 수동 입력분은 store_name 이 없으므로 나중에 운영에서 구분해 검수할 수 있다.
+        if amount and 0 < amount <= settings.receipt_max_amount:
+            parsed = {"store_name": None, "total_price": amount,
+                      "paid_at": None, "model": "manual"}
+        elif isinstance(e, ocr.OCRUnreadable):
+            raise HTTPException(422, str(e)) from e
+        else:
+            # 우리 설정·네트워크 문제. 사용자 탓이 아니므로 문구를 구분한다.
+            raise HTTPException(503, str(e)) from e
 
     cashback = int(parsed["total_price"] * settings.receipt_cashback_rate)
 
@@ -97,9 +109,13 @@ async def scan(
         "cashback_rate": settings.receipt_cashback_rate,
         "cafe_name": cafe_name,
         "store_matched": matched,
+        "manual": parsed.get("model") == "manual",
         "message": (
+            "금액을 직접 입력했어요"
+            if parsed.get("model") == "manual" else
             "영수증을 확인했어요"
             if matched is not False else
-            f"영수증 상호({parsed['store_name']})가 선택한 매장과 달라요. 확인해주세요"
+            f"영수증 상호({parsed['store_name']})가 선택한 매장과 달라요. "
+            "다른 매장 영수증이면 적립이 취소될 수 있어요"
         ),
     }
