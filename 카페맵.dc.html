@@ -618,6 +618,19 @@ async function getToken() {
   return data.session ? data.session.access_token : null;   // 매번 새로 꺼낸다
 }
 
+/* 로그인 직후 복귀했을 때 세션이 자리잡을 때까지 잠깐 기다린다.
+   supabase-js 는 URL 의 #access_token 을 비동기로 처리하는데, 그 전에
+   getSession() 을 부르면 null 이 나와서 '로그인 안 된 것'으로 오판한다.
+   그래서 로그인 화면이 그대로 남아 있었다. */
+async function waitForSession(tries) {
+  for (let i = 0; i < (tries || 12); i++) {
+    const tk = await getToken();
+    if (tk) return tk;
+    await new Promise(r => setTimeout(r, 250));
+  }
+  return null;
+}
+
 async function call(path, opts) {
   opts = opts || {};
   const tk = await getToken();
@@ -816,7 +829,7 @@ class Component extends DCLogic {
   state = {
     active: [], selected: 's1', expanded: null, sheet: 'peek',
     savedIds: ['s1','s2','s4','s6'], focus: null, screen: 'map', menu: false, done: false, walletTab: 'ledger', alarm: true, loggedIn: false, provider: '', signing: '',
-    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', points: 12400, month: 2200, reviewCount: 12,
+    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', email: '', points: 12400, month: 2200, reviewCount: 12,
     ledger: BASE_LEDGER, lastEarned: 0, withdraw: false, wdAmount: 10000,
   };
   listRef = React.createRef();
@@ -838,12 +851,11 @@ class Component extends DCLogic {
     // 로그인 후 돌아왔을 때 URL 에 뭐가 실려왔는지 무조건 화면에 남긴다.
     // (조건부로만 띄웠더니 '아무것도 안 뜬다'가 반복돼 원인을 못 좁혔다)
     // 로그인을 아직 안 눌렀으면 표시하지 않는다.
-    const ls = Object.keys(localStorage).filter(k => k.indexOf('sb-') === 0);
-    if (location.search || location.hash) {
-      this.state.authNote =
-        'URL: ' + (location.search || '없음') +
-        ' | hash: ' + (location.hash ? location.hash.slice(0, 40) + '…' : '없음') +
-        ' | 저장키: ' + (ls.length ? ls.join(',') : '없음');
+    // Supabase 가 오류를 실어 보냈을 때만 화면에 남긴다.
+    // (진단용으로 항상 띄우던 건 원인을 찾았으니 껐다)
+    if (this._authReturn.error) {
+      this.state.authNote = '로그인 실패: '
+        + decodeURIComponent(this._authReturn.desc || this._authReturn.error);
     }
 
     Promise.all([
@@ -887,17 +899,19 @@ class Component extends DCLogic {
         }
         return null;
       })
-      .then(() => getToken())
+      .then(() => {
+        // 로그인하고 막 돌아온 경우엔 세션이 잡힐 때까지 기다린다.
+        const returning = !!(location.hash || location.search || this._authReturn.code);
+        return returning ? waitForSession(12) : getToken();
+      })
       .then(tk => {
         const keys = Object.keys(localStorage).filter(k => k.indexOf('sb-') === 0);
         if (tk) return this.syncMe();
         if (!AUTH_REQUIRED) return this.syncMe();
         // 돌아왔는데 토큰이 없다 → 어디서 끊겼는지 그대로 보여준다
-        if (location.search || location.hash || this.state.authNote) {
+        if (location.hash || location.search || this._authReturn.code) {
           this.setState({ authNote:
-            '세션 없음 · code=' + (this._authReturn.code ? '있음' : '없음') +
-            ' · 저장키=' + (keys.length ? keys.length + '개' : '없음') +
-            (this._authReturn.error ? ' · 오류=' + this._authReturn.error : '') });
+            '로그인이 완료되지 않았습니다 (저장키 ' + keys.length + '개)' });
         }
       })
       .catch(e => this.setState({ authNote: '로그인 확인 실패: ' + e.message }));
@@ -1067,6 +1081,7 @@ class Component extends DCLogic {
         signing: '',
         userId: me.id,
         nickname: me.nickname,
+        email: me.email || '',
         points: me.point_balance,
       });
       return call('/api/users/' + me.id + '/points').then(p => {
@@ -1233,8 +1248,11 @@ class Component extends DCLogic {
       clearFocus: () => this.setState({ focus: null }),
       sortStyle: `display:${st.focus ? 'none' : 'flex'};align-items:center;gap:6px;padding:7px 11px;background:#fae6c1;border-radius:999px`,
       listRef: this.listRef,
-      nickname: '지현 · 런케이션 3주차',
-      email: st.provider === 'kakao' ? 'jihyun.k@kakao.com' : 'jihyun.k@gmail.com',
+      // 로그인한 실제 계정 정보. 목업 시절 '지현'이 박혀 있어서 진짜 이름이
+      // 화면에 안 나왔다. 아직 안 불러왔으면 목업 값으로 둔다.
+      nickname: st.nickname ? st.nickname + ' · 런케이션' : '지현 · 런케이션 3주차',
+      email: st.email
+        || (st.provider === 'kakao' ? '카카오 계정 연결됨' : 'jihyun.k@gmail.com'),
       pointsLabel: st.points.toLocaleString() + 'P',
       monthLabel: '+' + st.month.toLocaleString() + 'P',
       reviewCount: st.reviewCount,
@@ -1330,8 +1348,10 @@ class Component extends DCLogic {
       ].map(r => ({ ...r, icon: `width:8px;height:8px;border-radius:50%;flex:none;background:${r.color}` })),
 
       accountRows: [
-        { label: '닉네임', value: '지현', action: '변경' },
-        { label: '연동 메일', value: st.provider === 'kakao' ? 'jihyun.k@kakao.com' : 'jihyun.k@gmail.com', action: '변경' },
+        { label: '닉네임', value: st.nickname || '지현', action: '변경' },
+        { label: '연동 메일', value: st.email
+            || (st.provider === 'kakao' ? '카카오 계정 연결됨' : 'jihyun.k@gmail.com'),
+          action: '변경' },
         { label: '로그인', value: st.provider === 'kakao' ? '카카오 계정 연결됨' : 'Google 계정 연결됨', action: '관리' },
         { label: '체류 유형', value: '런케이션 · 장기 체류', action: '변경' },
       ],
