@@ -835,6 +835,17 @@ class Component extends DCLogic {
       token: h.get('access_token'),
     };
 
+    // 로그인 후 돌아왔을 때 URL 에 뭐가 실려왔는지 무조건 화면에 남긴다.
+    // (조건부로만 띄웠더니 '아무것도 안 뜬다'가 반복돼 원인을 못 좁혔다)
+    // 로그인을 아직 안 눌렀으면 표시하지 않는다.
+    const ls = Object.keys(localStorage).filter(k => k.indexOf('sb-') === 0);
+    if (location.search || location.hash) {
+      this.state.authNote =
+        'URL: ' + (location.search || '없음') +
+        ' | hash: ' + (location.hash ? location.hash.slice(0, 40) + '…' : '없음') +
+        ' | 저장키: ' + (ls.length ? ls.join(',') : '없음');
+    }
+
     Promise.all([
       fetch(API + '/api/auth/config').then(r => r.json()),
       loadSupabaseSdk().then(() => null).catch(e => e),   // 실패해도 진행
@@ -878,10 +889,15 @@ class Component extends DCLogic {
       })
       .then(() => getToken())
       .then(tk => {
-        if (tk || !AUTH_REQUIRED) return this.syncMe();
-        // 로그인하고 돌아왔는데 토큰이 없으면 원인을 알려준다
-        if (this._authReturn && (this._authReturn.code || this._authReturn.token)) {
-          this.setState({ authNote: '토큰을 받았지만 세션 저장에 실패했습니다' });
+        const keys = Object.keys(localStorage).filter(k => k.indexOf('sb-') === 0);
+        if (tk) return this.syncMe();
+        if (!AUTH_REQUIRED) return this.syncMe();
+        // 돌아왔는데 토큰이 없다 → 어디서 끊겼는지 그대로 보여준다
+        if (location.search || location.hash || this.state.authNote) {
+          this.setState({ authNote:
+            '세션 없음 · code=' + (this._authReturn.code ? '있음' : '없음') +
+            ' · 저장키=' + (keys.length ? keys.length + '개' : '없음') +
+            (this._authReturn.error ? ' · 오류=' + this._authReturn.error : '') });
         }
       })
       .catch(e => this.setState({ authNote: '로그인 확인 실패: ' + e.message }));
