@@ -149,7 +149,11 @@ async function login(provider) {
   if (!supabase) return toast('Supabase 설정이 없습니다 (.env 확인)');
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: window.location.href },
+    options: {
+      redirectTo: window.location.href,
+      // 카카오 account_email 은 비즈앱 전용이라 요청하면 400. 빼고 간다.
+      scopes: provider === 'kakao' ? 'profile_nickname profile_image' : undefined,
+    },
   });
   if (error) toast(`로그인 실패: ${error.message}`);
 }

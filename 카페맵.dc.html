@@ -953,7 +953,16 @@ class Component extends DCLogic {
 
     SB.auth.signInWithOAuth({
       provider: provider,                       // 'google' | 'kakao'
-      options: { redirectTo: window.location.href },
+      options: {
+        redirectTo: window.location.href,
+        // 카카오는 account_email 을 요청하면 400 이 난다. 이메일 수집은
+        // 비즈앱(사업자 등록) 심사를 통과해야 열리는 항목이라 일반 앱은 못 쓴다.
+        // Supabase 기본 scope 에 그게 들어있어서 여기서 덮어쓴다.
+        // 백엔드는 이메일이 없으면 닉네임으로 계정을 만들도록 이미 돼 있다.
+        scopes: provider === 'kakao'
+          ? 'profile_nickname profile_image'
+          : undefined,
+      },
     }).then(r => {
       // 성공하면 페이지가 OAuth 창으로 넘어가므로 여기 아래는 실패 경로다.
       if (r.error) this.setState({ signing: '', authError: r.error.message });
