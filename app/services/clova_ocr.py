@@ -47,14 +47,23 @@ def is_configured() -> bool:
     return bool(settings.clova_ocr_url and settings.clova_ocr_secret)
 
 
-def endpoint() -> str:
-    """호출에 쓸 URL. http 로 적혀 있으면 https 로 올린다.
+def endpoints() -> list[str]:
+    """시도할 URL 목록. https 를 먼저, 실패하면 원본(http)으로.
 
-    시크릿이 헤더에 실려 나가는데 http 면 중간에서 그대로 읽힌다.
-    콘솔이 http 로 보여주는 경우가 있어 여기서 강제한다.
+    시크릿이 헤더에 실려 나가므로 https 가 바람직하다. 그래서 http 로 적혀
+    있어도 일단 https 로 올려서 시도한다.
+    다만 구버전 엔드포인트(clovaocr-api-kr.ncloud.com/external/v1/…)는 443 을
+    안 열어둬서 https 로 붙으면 ConnectTimeout 이 난다. 그때는 원본으로 돌아간다.
     """
     u = settings.clova_ocr_url.strip()
-    return "https://" + u[len("http://"):] if u.startswith("http://") else u
+    if u.startswith("http://"):
+        return ["https://" + u[len("http://"):], u]
+    return [u]
+
+
+def endpoint() -> str:
+    """표시·점검용 대표 URL."""
+    return endpoints()[0]
 
 
 def is_receipt_model() -> bool:
@@ -266,16 +275,31 @@ def scan_receipt(image_bytes: bytes, filename: str = "receipt.jpg") -> dict:
         }],
     }
 
-    try:
-        r = httpx.post(
-            endpoint(),
-            headers={"X-OCR-SECRET": settings.clova_ocr_secret},
-            json=body,
-            timeout=20.0,       # OCR 은 느리다. 5초로는 자주 끊긴다
-        )
-    except Exception as e:  # noqa: BLE001
-        logger.warning("CLOVA OCR 호출 실패: %s: %s", type(e).__name__, str(e)[:150])
-        raise OCRUnavailable("OCR 서버에 연결하지 못했습니다") from e
+    urls = endpoints()
+    last_err: Exception | None = None
+    r = None
+
+    for i, url in enumerate(urls):
+        try:
+            r = httpx.post(
+                url,
+                headers={"X-OCR-SECRET": settings.clova_ocr_secret},
+                json=body,
+                # connect 는 짧게(5초), 읽기는 길게(25초).
+                # OCR 자체는 느리지만 '연결'이 5초 안에 안 되면 그 주소는 안 열려
+                # 있는 것이므로 빨리 포기하고 다음 후보로 넘어가는 게 낫다.
+                timeout=httpx.Timeout(25.0, connect=5.0),
+            )
+            break
+        except Exception as e:  # noqa: BLE001
+            last_err = e
+            logger.warning("CLOVA OCR 호출 실패(%s): %s: %s",
+                           url.split("://")[0], type(e).__name__, str(e)[:120])
+            if i < len(urls) - 1:
+                logger.warning("→ 다음 후보로 재시도합니다")
+
+    if r is None:
+        raise OCRUnavailable("OCR 서버에 연결하지 못했습니다") from last_err
 
     if r.status_code == 401:
         raise OCRUnavailable("CLOVA Secret 이 올바르지 않습니다 (401)")
