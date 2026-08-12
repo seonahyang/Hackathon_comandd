@@ -653,6 +653,29 @@ function crowdOf(s) {
   return s.distHot >= 5 ? 'low' : s.distHot <= 1.5 ? 'high' : 'mid';
 }
 
+/* supabase-js 를 직접 불러온다.
+   <helmet> 안의 <script> 태그에 맡겼더니 로드가 안 되는 경우가 있었다.
+   그러면 window.supabase 가 없어서 로그인 코드가 통째로 건너뛰어지고,
+   화면에는 아무 일도 안 일어난다(에러조차 안 남는다). 그래서 직접 넣는다. */
+function loadSupabaseSdk() {
+  return new Promise((resolve, reject) => {
+    if (window.supabase && window.supabase.createClient) return resolve();
+
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    const timer = setTimeout(
+      () => reject(new Error('supabase-js 응답 없음 (네트워크 확인)')), 8000);
+    s.onload = () => {
+      clearTimeout(timer);
+      (window.supabase && window.supabase.createClient)
+        ? resolve()
+        : reject(new Error('supabase-js 로드됐으나 초기화 실패'));
+    };
+    s.onerror = () => { clearTimeout(timer); reject(new Error('supabase-js 로드 실패')); };
+    document.head.appendChild(s);
+  });
+}
+
 /* ══ 카카오맵 ═════════════════════════════════════════════════════════════
    지도는 '배경 그림'이 아니라 실제 지도여야 한다. 확대·이동이 되고 핀이 같이
    따라붙어야 지도로서 의미가 있다. 그래서 카카오맵이 화면을 소유하고, 핀 위치는
@@ -812,15 +835,23 @@ class Component extends DCLogic {
       token: h.get('access_token'),
     };
 
-    fetch(API + '/api/auth/config')
-      .then(r => r.json())
-      .then(cfg => {
+    Promise.all([
+      fetch(API + '/api/auth/config').then(r => r.json()),
+      loadSupabaseSdk().then(() => null).catch(e => e),   // 실패해도 진행
+    ])
+      .then(([cfg, sdkErr]) => {
         AUTH_REQUIRED = cfg.auth_required;
-        if (cfg.supabase_url && cfg.supabase_anon_key && window.supabase) {
+
+        if (sdkErr) {
+          this.setState({ authNote: '로그인 모듈 로드 실패: ' + sdkErr.message });
+        } else if (!cfg.supabase_url || !cfg.supabase_anon_key) {
+          this.setState({ authNote: 'Supabase 설정 누락 (환경변수 확인)' });
+        } else {
           SB = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
           SB.auth.onAuthStateChange((_e, sess) => { if (sess) this.syncMe(); });
           window.__SB = SB;              // 콘솔에서 확인할 수 있게 노출
         }
+
         this.initMap(cfg.kakao_js_key);
 
         if (!SB) return null;
@@ -982,12 +1013,14 @@ class Component extends DCLogic {
     if (this.state.signing) return;
     this.setState({ signing: provider });
 
-    // Supabase 가 없으면(설정 누락·오프라인) 예전처럼 가짜 로그인으로 넘어간다.
-    // 발표 중 네트워크가 끊겨도 화면 흐름은 보여줄 수 있어야 한다.
+    // Supabase 가 없으면 가짜로 로그인된 척하지 않는다.
+    // 예전엔 1.1초 뒤 loggedIn=true 로 바꿨는데, 그러면 '되는 것처럼' 보여서
+    // 진짜 원인(SDK 미로드 등)을 찾는 데 한참 걸린다. 이유를 그대로 띄운다.
     if (!SB) {
-      clearTimeout(this._authT);
-      this._authT = setTimeout(
-        () => this.setState({ loggedIn: true, provider, signing: '' }), 1100);
+      this.setState({
+        signing: '',
+        authNote: '로그인을 사용할 수 없습니다 — ' + (this.state.authNote || '초기화 실패'),
+      });
       return;
     }
 
