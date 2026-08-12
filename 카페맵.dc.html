@@ -955,14 +955,13 @@ class Component extends DCLogic {
       provider: provider,                       // 'google' | 'kakao'
       options: {
         redirectTo: window.location.href,
-        // 카카오는 scope 를 빈 문자열로 보낸다.
-        //   · Supabase 기본값에 account_email 이 들어있는데, 이메일 수집은
+        // 카카오는 profile_nickname 만 요청한다.
+        //   · Supabase 기본 scope 에는 account_email 이 들어있는데, 이메일 수집은
         //     비즈앱(사업자 등록) 심사를 통과해야 열려서 일반 앱은 400 이 난다.
-        //   · profile_nickname 조차 콘솔 '동의항목'에 설정돼 있어야 통과한다.
-        // 아무것도 요청하지 않으면 카카오가 기본 동의항목만으로 처리하므로
-        // 콘솔 설정에 의존하지 않고 로그인이 된다.
-        // 백엔드는 이메일·닉네임이 없으면 '게스트'로 계정을 만든다(auth.py).
-        scopes: provider === 'kakao' ? '' : undefined,
+        //   · 빈 문자열('')로 덮어쓰려 했더니 JS 에서 falsy 라 supabase-js 가
+        //     '값 없음'으로 보고 기본 scope 로 되돌아갔다. 반드시 값이 있어야 한다.
+        // 닉네임은 카카오 콘솔 동의항목에 '필수 동의'로 설정돼 있어 통과한다.
+        scopes: provider === 'kakao' ? 'profile_nickname' : undefined,
       },
     }).then(r => {
       // 성공하면 페이지가 OAuth 창으로 넘어가므로 여기 아래는 실패 경로다.

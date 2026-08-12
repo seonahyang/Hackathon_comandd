@@ -151,9 +151,9 @@ async function login(provider) {
     provider,
     options: {
       redirectTo: window.location.href,
-      // 카카오는 scope 를 비운다. account_email 은 비즈앱 전용이고,
-      // profile_nickname 도 콘솔 동의항목 설정에 의존해서 400 이 나기 쉽다.
-      scopes: provider === 'kakao' ? '' : undefined,
+      // account_email 은 비즈앱 전용이라 400. 빈 문자열은 falsy 라 무시되므로
+      // 반드시 값을 넣어 덮어쓴다. 닉네임은 콘솔에 필수 동의로 설정돼 있다.
+      scopes: provider === 'kakao' ? 'profile_nickname' : undefined,
     },
   });
   if (error) toast(`로그인 실패: ${error.message}`);
