@@ -13,3 +13,11 @@ PyJWT[crypto]>=2.9
 # PostgreSQL/Supabase 연결용. SQLite만 쓸 거면 없어도 됩니다.
 # 설치가 실패하면 이 줄만 지우고 나머지를 설치하세요.
 psycopg2-binary>=2.9.9
+
+# 제주 관광공사 엑셀(data/iddy_fnb.xlsx) 적재용 — scripts/ingest_iddy.py
+# openpyxl 은 pandas 가 .xlsx 를 읽을 때 쓰는 엔진이라 같이 필요합니다.
+pandas>=2.0
+openpyxl>=3.1
+
+# 영수증 이미지 업로드(multipart/form-data) 수신용 — routers/receipts.py
+python-multipart>=0.0.9

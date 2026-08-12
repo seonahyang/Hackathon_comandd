@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>이디저디 — 제주 카공스팟</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  /* 디자인 토큰 — 팀 목업(카페맵.dc.html)에서 그대로 가져옴 */
+  :root{
+    --orange:#f78708; --orange-dark:#c96d05; --beige:#fae6c1; --blue:#2f6df6;
+    --green:#17a06a; --warn:#e2622f; --ink:#3d372f; --sub:#a79c8a;
+    --bg:#fdf8ef; --card:#fff; --line:#efe6d6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#f6f1e8;font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;
+       -webkit-font-smoothing:antialiased;color:var(--ink)}
+  .phone{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);
+         position:relative;display:flex;flex-direction:column}
+  .top{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 18px 10px;
+       border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:8px}
+  .pill{font:800 11px/1 Pretendard;letter-spacing:.06em;background:var(--orange);color:#fff;
+        padding:6px 10px;border-radius:999px}
+  .who{margin-left:auto;font:700 12px/1.2 Pretendard;color:var(--sub);text-align:right}
+  .chips{display:flex;gap:7px;overflow-x:auto;padding:12px 18px 4px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;font:700 12.5px/1 Pretendard;padding:9px 13px;border-radius:999px;
+        border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;
+        transition:.15s;white-space:nowrap}
+  .chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#fff}
+  .count{padding:10px 18px 2px;font:700 12px/1 Pretendard;color:var(--sub)}
+  .list{flex:1;padding:8px 18px 90px;display:flex;flex-direction:column;gap:11px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 16px;
+        cursor:pointer;transition:.15s}
+  .card:active{transform:scale(.99)}
+  .row{display:flex;align-items:flex-start;gap:10px}
+  .name{font:800 16px/1.3 Pretendard;flex:1}
+  .badge{flex:none;font:800 11.5px/1 Pretendard;padding:6px 9px;border-radius:8px;
+         background:#e6f4ec;color:#0f7a50}
+  .meta{margin-top:6px;font:600 12.5px/1.5 Pretendard;color:var(--sub)}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tag{font:700 11px/1 Pretendard;padding:5px 8px;border-radius:7px;background:#f5efe4;color:#8a7c66}
+  .tag.ok{background:#e6f4ec;color:#0f7a50}
+  .tag.warn{background:#fdeee7;color:var(--warn)}
+  .tag.brk{background:#fff2e0;color:#a35d04}
+  .empty{margin:34px 4px;padding:26px 20px;border:1.5px dashed var(--line);border-radius:18px;
+         background:#fff;text-align:center}
+  .empty h3{margin:0 0 8px;font:800 16px/1.4 Pretendard}
+  .empty p{margin:0 0 16px;font:600 13px/1.65 Pretendard;color:var(--sub)}
+  button.primary{width:100%;padding:14px;border:0;border-radius:14px;background:var(--orange);
+        color:#fff;font:800 14.5px/1 Pretendard;cursor:pointer}
+  button.primary:disabled{background:#e6ddcd;color:#a79c8a;cursor:default}
+  button.ghost{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:14px;
+        background:#fff;color:var(--ink);font:800 14px/1 Pretendard;cursor:pointer;margin-top:8px}
+  .scrim{position:fixed;inset:0;background:rgba(45,38,28,.45);z-index:40;display:none}
+  .scrim.on{display:block}
+  .sheet{position:fixed;left:50%;transform:translateX(-50%) translateY(110%);bottom:0;width:100%;
+         max-width:430px;background:#fff;border-radius:26px 26px 0 0;z-index:41;
+         padding:20px 20px 26px;transition:transform .34s cubic-bezier(.2,.9,.25,1);
+         max-height:88vh;overflow-y:auto}
+  .sheet.on{transform:translateX(-50%) translateY(0)}
+  .sheet h2{margin:0 0 4px;font:800 19px/1.3 Pretendard}
+  .why{margin:12px 0 0;padding:12px 14px;background:#fdf8ef;border-radius:12px;
+       font:600 13px/1.65 Pretendard;color:#6b6255}
+  .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f4eee2;
+      font:600 13px/1 Pretendard}
+  .kv b{font-weight:800}
+  textarea{width:100%;min-height:96px;border:1.5px solid var(--line);border-radius:14px;padding:12px;
+           font:600 13.5px/1.6 Pretendard;resize:vertical;margin-top:10px}
+  .stars{display:flex;gap:6px;margin-top:12px}
+  .star{font-size:26px;cursor:pointer;color:#e6ddcd;line-height:1}
+  .star.on{color:var(--orange)}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;z-index:60;
+         background:#3d372f;color:#fff;padding:13px 18px;border-radius:14px;
+         font:700 13.5px/1.4 Pretendard;opacity:0;pointer-events:none;transition:.25s;max-width:390px}
+  .toast.on{opacity:1}
+  .err{margin:18px;padding:16px;border-radius:14px;background:#fdeee7;color:#9a3412;
+       font:600 13px/1.7 Pretendard}
+  .loading{padding:50px 0;text-align:center;color:var(--sub);font:700 13px/1 Pretendard}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top">
+    <div class="brand">
+      <span class="pill">이디저디</span>
+      <span style="font:800 14px/1.2 Pretendard">제주 카공스팟</span>
+      <span class="who" id="who">로그인 안 함</span>
+    </div>
+  </div>
+
+  <div class="chips" id="chips"></div>
+  <div class="count" id="count"></div>
+  <div class="list" id="list"><div class="loading">불러오는 중…</div></div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 설정 — 하드코딩할 게 없다.
+      백엔드가 /api/auth/config 로 supabase URL·anon key를 내려준다.
+      그래서 프론트에 .env 를 안 만들어도 되고, Supabase 프로젝트를
+      갈아끼워도 이 파일은 고칠 필요가 없다.
+   ═══════════════════════════════════════════════════════════════ */
+/* 백엔드 주소 결정 규칙
+     1) ?api=... 쿼리가 있으면 그걸 쓴다 (다른 PC의 서버를 볼 때)
+     2) file:// 로 파일을 직접 열었으면 로컬 서버를 찾는다
+     3) 그 외에는 항상 '같은 출처' — 이 페이지를 내려준 서버가 곧 백엔드다
+
+   3번이 중요하다. 예전엔 'port가 8000이면 같은 출처'로 판단했는데,
+   배포하면 포트가 443(https)이라 조건이 안 맞아서 방문자 본인 PC의
+   127.0.0.1:8000 을 부르게 된다 — 남의 컴퓨터에선 당연히 아무것도 없다. */
+const API = new URLSearchParams(location.search).get('api')
+  || (location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '');
+
+let supabase = null;
+let authRequired = true;
+
+async function boot() {
+  const cfg = await fetch(`${API}/api/auth/config`).then(r => r.json());
+  authRequired = cfg.auth_required;
+
+  if (cfg.supabase_url && cfg.supabase_anon_key) {
+    supabase = createClient(cfg.supabase_url, cfg.supabase_anon_key);
+    supabase.auth.onAuthStateChange(() => syncMe());
+  }
+  await syncMe();
+  await load();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 인증 — 구글 / 카카오
+   ═══════════════════════════════════════════════════════════════ */
+let me = null;
+
+async function token() {
+  if (!supabase) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;   // 매번 꺼낸다. 캐싱하면 만료로 401
+}
+
+async function login(provider) {
+  if (!supabase) return toast('Supabase 설정이 없습니다 (.env 확인)');
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.href },
+  });
+  if (error) toast(`로그인 실패: ${error.message}`);
+}
+
+async function logout() {
+  await supabase?.auth.signOut();
+  me = null;
+  paintWho();
+}
+
+async function syncMe() {
+  const t = await token();
+  // AUTH_REQUIRED=false 인 개발 모드에서는 토큰 없이도 /me 가 응답한다
+  if (!t && authRequired) { me = null; paintWho(); return; }
+  try {
+    me = await api('/api/auth/me');
+  } catch { me = null; }
+  paintWho();
+}
+
+function paintWho() {
+  const el = document.getElementById('who');
+  el.innerHTML = me
+    ? `${esc(me.nickname)}<br><b style="color:var(--orange)">${me.point_balance.toLocaleString()}P</b>`
+    : `<span style="cursor:pointer;color:var(--orange)">로그인</span>`;
+  el.onclick = me ? () => confirm('로그아웃할까요?') && logout() : openLogin;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. API 헬퍼 — 모든 요청에 Bearer 토큰을 붙인다
+   ═══════════════════════════════════════════════════════════════ */
+async function api(path, opts = {}) {
+  const t = await token();
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(t ? { Authorization: `Bearer ${t}` } : {}),
+      ...opts.headers,
+    },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.detail ?? `${res.status} ${res.statusText}`);
+  return body;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. 필터 — 칩 하나가 쿼리 파라미터 하나
+   ═══════════════════════════════════════════════════════════════ */
+const CHIPS = [
+  { label: '여유롭게 2시간', q: { stay_hours: 2 } },
+  { label: '카공 가능',     q: { cagong: true } },
+  { label: '리뷰 적립',     q: { remote_only: true, sort: 'reward' } },
+  { label: '지금 영업중',   q: { open_now: true } },
+  { label: '영업시간 확실', q: { hours_verified: true } },
+  { label: '식당까지',      q: { place_type: 'all' } },
+];
+const on = new Set();
+
+function paintChips() {
+  document.getElementById('chips').innerHTML = CHIPS.map((c, i) =>
+    `<button class="chip" data-i="${i}" aria-pressed="${on.has(i)}">${c.label}</button>`
+  ).join('');
+  document.querySelectorAll('.chip').forEach(b => b.onclick = () => {
+    const i = +b.dataset.i;
+    on.has(i) ? on.delete(i) : on.add(i);
+    paintChips(); load();
+  });
+}
+
+let cafes = [];
+
+async function load() {
+  const p = new URLSearchParams({
+    limit: 60,
+    sort: 'distance',
+    lat: 33.4996, lng: 126.5312, radius_km: 60,   // 제주시청 기준
+  });
+  for (const i of on) for (const [k, v] of Object.entries(CHIPS[i].q)) p.set(k, v);
+
+  document.getElementById('list').innerHTML = '<div class="loading">불러오는 중…</div>';
+  try {
+    const data = await api(`/api/cafes?${p}`);
+    cafes = data.items;
+    paintList(data);
+  } catch (e) {
+    document.getElementById('list').innerHTML =
+      `<div class="err"><b>백엔드에 연결하지 못했습니다.</b><br>${esc(e.message)}
+       <br><br>서버가 켜져 있는지 확인하세요:<br><code>uvicorn app.main:app --reload</code></div>`;
+  }
+}
+
+function paintList(data) {
+  document.getElementById('count').textContent =
+    `${data.total}곳 · ${data.now} 기준`;
+
+  if (!cafes.length) {
+    // 카공 필터는 제보가 쌓이기 전까지 0건이다. 빈 화면을 그냥 두면
+    // 고장난 것처럼 보이므로, 여기서 곧바로 제보 유도로 연결한다.
+    document.getElementById('list').innerHTML = `
+      <div class="empty">
+        <h3>조건에 맞는 곳이 아직 없어요</h3>
+        <p>공공데이터에는 콘센트·와이파이 정보가 없습니다.<br>
+           첫 제보자가 되면 <b style="color:var(--orange)">300P</b>를 드려요.</p>
+        <button class="primary" id="goWanted">제보할 곳 찾아보기</button>
+      </div>`;
+    document.getElementById('goWanted').onclick = openWanted;
+    return;
+  }
+
+  document.getElementById('list').innerHTML = cafes.map((c, i) => {
+    const s = c.stay ?? {};
+    const tags = [];
+    if (s.stay_ok) tags.push(['ok', s.label]);
+    else if (s.label) tags.push([s.reason === 'break_time' ? 'brk' : 'warn', s.label]);
+    if (s.break_time) tags.push(['brk', `브레이크 ${s.break_time}`]);
+    if (c.cagong_ok) tags.push(['ok', '카공 가능']);
+    if (c.parking) tags.push(['', '주차']);
+    if (c.hours_confidence !== 'high') tags.push(['warn', '영업시간 부정확']);
+
+    return `<div class="card" data-i="${i}">
+      <div class="row">
+        <div class="name">${esc(c.name)}</div>
+        ${c.reward.is_boosted
+          ? `<span class="badge">리뷰 +${c.reward.point.toLocaleString()}P</span>` : ''}
+      </div>
+      <div class="meta">
+        ${esc(c.district ?? '')} · ${c.open_time}~${c.close_time}
+        ${c.distance_km != null ? ` · ${c.distance_km}km` : ''}
+        ${c.travel_min != null ? ` (차 ${c.travel_min}분)` : ''}<br>
+        리뷰 ${c.review_count}개 · 도심에서 ${c.dist_to_hotspot_km}km
+      </div>
+      <div class="tags">${tags.map(([k, t]) =>
+        `<span class="tag ${k}">${esc(t)}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.card').forEach(el =>
+    el.onclick = () => openDetail(cafes[+el.dataset.i]));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. 상세 + 리뷰 작성
+   ═══════════════════════════════════════════════════════════════ */
+const scrim = document.getElementById('scrim');
+const sheet = document.getElementById('sheet');
+scrim.onclick = closeSheet;
+
+function openSheet(html) {
+  sheet.innerHTML = html;
+  scrim.classList.add('on'); sheet.classList.add('on');
+}
+function closeSheet() { scrim.classList.remove('on'); sheet.classList.remove('on'); }
+
+function openLogin() {
+  openSheet(`
+    <h2>로그인</h2>
+    <p style="font:600 13px/1.7 Pretendard;color:var(--sub);margin:6px 0 18px">
+      리뷰와 제보에는 로그인이 필요해요.<br>소셜 로그인만 지원합니다.</p>
+    <button class="primary" id="g">구글로 계속하기</button>
+    <button class="ghost" id="k">카카오로 계속하기</button>`);
+  document.getElementById('g').onclick = () => login('google');
+  document.getElementById('k').onclick = () => login('kakao');
+}
+
+function openDetail(c) {
+  const s = c.stay ?? {};
+  openSheet(`
+    <h2>${esc(c.name)}</h2>
+    <div style="font:600 12.5px/1.6 Pretendard;color:var(--sub);margin-top:4px">
+      ${esc(c.address ?? '')}</div>
+    ${s.label ? `<div class="why">${esc(s.label)}${
+      s.sit_from ? ` · ${s.sit_from}부터 앉을 수 있어요` : ''}</div>` : ''}
+    <div style="margin-top:14px">
+      <div class="kv"><span>영업시간</span><b>${c.open_time} ~ ${c.close_time}</b></div>
+      ${c.break_start ? `<div class="kv"><span>브레이크</span>
+        <b style="color:var(--warn)">${c.break_start} ~ ${c.break_end}</b></div>` : ''}
+      <div class="kv"><span>리뷰</span><b>${c.review_count}개</b></div>
+      <div class="kv"><span>도심에서</span><b>${c.dist_to_hotspot_km}km</b></div>
+      <div class="kv"><span>콘센트</span><b>${
+        c.has_power ? '있음' : '<span style="color:var(--sub)">미확인</span>'}</b></div>
+      <div class="kv"><span>정보 출처</span><b>${
+        { estimated: '추정', user: '이용자 제보', owner: '점주 인증', manual: '수동' }[c.cagong_source]
+        ?? c.cagong_source}</b></div>
+      <div class="kv"><span>리뷰 적립금</span>
+        <b style="color:var(--orange)">${c.reward.point.toLocaleString()}P</b></div>
+    </div>
+    ${c.summary ? `<div class="why">${esc(c.summary.slice(0, 220))}</div>` : ''}
+    <div style="margin-top:16px">
+      <button class="primary" id="rv">리뷰 쓰고 ${c.reward.point.toLocaleString()}P 받기</button>
+      <button class="ghost" id="rp">${
+        c.has_power ? '정보가 틀렸어요' : '콘센트 있어요 제보 (+300P)'}</button>
+    </div>`);
+  document.getElementById('rv').onclick = () => openReview(c);
+  document.getElementById('rp').onclick = () => report(c, !c.has_power);
+}
+
+function openReview(c) {
+  if (!me) return openLogin();
+  let rating = 5;
+  openSheet(`
+    <h2>${esc(c.name)}</h2>
+    <div style="font:700 13px/1.5 Pretendard;color:var(--orange);margin-top:4px">
+      작성하면 ${c.reward.point.toLocaleString()}P 적립</div>
+    <div class="stars" id="st"></div>
+    <textarea id="tx" placeholder="콘센트·좌석·소음 같은 실제 정보를 40자 이상 적으면 300P가 더 붙어요"></textarea>
+    <button class="primary" id="go" style="margin-top:12px">등록하기</button>`);
+
+  const paint = () => document.getElementById('st').innerHTML =
+    [1, 2, 3, 4, 5].map(n => `<span class="star ${n <= rating ? 'on' : ''}" data-n="${n}">★</span>`).join('');
+  paint();
+  sheet.onclick = e => {
+    const s = e.target.closest('.star');
+    if (s) { rating = +s.dataset.n; paint(); }
+  };
+
+  document.getElementById('go').onclick = async e => {
+    e.target.disabled = true;
+    try {
+      const r = await api('/api/reviews', {
+        method: 'POST',
+        body: JSON.stringify({
+          cafe_id: c.id, rating,
+          content: document.getElementById('tx').value,
+          tags: [],
+        }),
+      });
+      closeSheet();
+      toast(`${r.headline}  (잔액 ${r.point_balance.toLocaleString()}P)`);
+      me && (me.point_balance = r.point_balance);
+      paintWho(); load();
+    } catch (err) {
+      e.target.disabled = false;
+      toast(err.message);
+    }
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. 크라우드소싱 제보 — 2인 합의로 반영된다
+   ═══════════════════════════════════════════════════════════════ */
+async function report(c, value) {
+  if (!me) return openLogin();
+  try {
+    const r = await api('/api/reports', {
+      method: 'POST',
+      body: JSON.stringify({ cafe_id: c.id, field: 'has_power', value_bool: value }),
+    });
+    closeSheet();
+    toast(r.status_message + (r.earned_point ? ` (+${r.earned_point}P)` : ''));
+    load();
+  } catch (e) { toast(e.message); }
+}
+
+async function openWanted() {
+  const w = await api('/api/reports/wanted?limit=8');
+  openSheet(`
+    <h2>제보가 필요한 곳</h2>
+    <p style="font:600 13px/1.7 Pretendard;color:var(--sub);margin:6px 0 14px">
+      두 명이 같은 내용을 확인하면 지도에 반영됩니다.</p>
+    ${w.items.map(i => `<div class="kv">
+      <span>${esc(i.name)}<br>
+        <small style="color:var(--sub)">${esc(i.district ?? '')}${i.is_remote ? ' · 외곽' : ''}</small>
+      </span>
+      <b style="color:var(--orange)">+${i.reward_hint}P</b></div>`).join('')}`);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"]/g, m =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
+}
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 3200);
+}
+
+paintChips();
+boot();
+</script>
+</body>
+</html>

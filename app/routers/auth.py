@@ -29,6 +29,8 @@ def auth_config():
     return {
         "supabase_url": settings.supabase_url or None,
         "supabase_anon_key": settings.supabase_anon_key or None,
+        # 지도 렌더링용 공개키. 프론트가 하드코딩하지 않고 여기서 받아간다.
+        "kakao_js_key": settings.kakao_js_key or None,
         "auth_required": settings.auth_required,
         "jwks_url": settings.jwks_url if settings.supabase_url else None,
         "legacy_hs256_secret_set": bool(settings.supabase_jwt_secret),

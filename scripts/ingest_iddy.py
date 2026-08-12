@@ -258,13 +258,29 @@ def main() -> int:
         if args.purge:
             from app.models import CagongReport, PointLedger, Review
 
-            # 리뷰/제보는 cafe_id 외래키를 잡고 있어 카페보다 먼저 지워야 한다
-            n_rev = db.query(Review).delete()
-            n_rep = db.query(CagongReport).delete()
-            db.query(PointLedger).update({"cafe_id": None, "review_id": None})
-            n_cafe = db.query(Cafe).delete()
+            # 삭제 순서가 중요하다. 참조하는 쪽을 먼저 끊어야 한다.
+            #
+            #   point_ledger.review_id ─→ reviews.id ─→ cafes.id
+            #   point_ledger.cafe_id   ─────────────→ cafes.id
+            #
+            # 적립 내역(point_ledger)은 유저의 잔액 근거라 지우면 안 된다.
+            # 그래서 지우는 대신 참조만 NULL 로 끊고, 그 다음에 리뷰·카페를 지운다.
+            #
+            # SQLite 는 외래키를 기본으로 검사하지 않아 순서가 틀려도 그냥 넘어가지만,
+            # PostgreSQL 은 ForeignKeyViolation 으로 거부한다.
+            n_led = db.query(PointLedger).update(
+                {"cafe_id": None, "review_id": None}, synchronize_session=False
+            )
+            db.flush()
+
+            n_rev = db.query(Review).delete(synchronize_session=False)
+            n_rep = db.query(CagongReport).delete(synchronize_session=False)
+            db.flush()
+
+            n_cafe = db.query(Cafe).delete(synchronize_session=False)
             db.commit()
-            print(f"\n  기존 데이터 삭제: 카페 {n_cafe} / 리뷰 {n_rev} / 제보 {n_rep}")
+            print(f"\n  기존 데이터 삭제: 카페 {n_cafe} / 리뷰 {n_rev} / 제보 {n_rep}"
+                  f" (적립내역 {n_led}건은 참조만 끊고 보존)")
 
         existing = {
             key: cid for key, cid in db.execute(

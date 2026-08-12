@@ -15,9 +15,10 @@ Supabase 연결에서 팀이 가장 많이 막히는 3가지를 여기서 자동
    해커톤 데모 중 "갑자기 500 뜨는" 대부분의 원인이 이것.
 """
 
+import os
 from urllib.parse import urlsplit, urlunsplit
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from .config import settings
@@ -39,11 +40,40 @@ def _normalize(url: str) -> str:
 DATABASE_URL = _normalize(settings.database_url)
 IS_SQLITE = DATABASE_URL.startswith("sqlite")
 
+# Vercel 등 서버리스 위에서 도는지. 커넥션 관리 방식이 완전히 달라진다.
+IS_SERVERLESS = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
 if IS_SQLITE:
     engine = create_engine(
         DATABASE_URL,
         connect_args={"check_same_thread": False},
         pool_pre_ping=True,
+        echo=False,
+    )
+
+    @event.listens_for(engine, "connect")
+    def _sqlite_enforce_fk(dbapi_conn, _record):
+        """SQLite 도 외래키를 검사하게 만든다.
+
+        SQLite 는 기본값이 검사 꺼짐이라, 참조가 걸린 행을 지워도 그냥 넘어간다.
+        그러다 Supabase(PostgreSQL)에 올리는 순간 ForeignKeyViolation 으로 터진다.
+        로컬에서 통과한 코드가 배포에서만 깨지는 걸 막으려고 여기서 맞춰둔다.
+        """
+        cur = dbapi_conn.cursor()
+        cur.execute("PRAGMA foreign_keys=ON")
+        cur.close()
+elif IS_SERVERLESS:
+    # Vercel 같은 서버리스에서는 인스턴스가 수시로 생겼다 사라진다.
+    # 인스턴스마다 커넥션 풀을 들고 있으면 Supabase 커넥션 한도를 금방 넘긴다.
+    # (인스턴스 20개 × pool_size 5 = 100 커넥션)
+    # NullPool 은 요청이 끝나면 커넥션을 바로 반납한다. 풀링은 Supabase 의
+    # pooler 가 이미 해주고 있으므로 우리가 또 할 이유가 없다.
+    from sqlalchemy.pool import NullPool
+
+    engine = create_engine(
+        DATABASE_URL,
+        poolclass=NullPool,
+        connect_args={"connect_timeout": 10, "application_name": "jeju-cagong-vercel"},
         echo=False,
     )
 else:

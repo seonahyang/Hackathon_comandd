@@ -18,12 +18,16 @@ Q. 캐싱?
 A. 좌표를 소수점 3자리(약 100m)로 반올림한 키로 DB에 저장. 같은 경로 재호출 안 함.
 """
 
+import logging
+
 import httpx
 from sqlalchemy.orm import Session
 
 from ..config import settings
 from ..core.geo import haversine_km
 from ..models import RouteCache
+
+logger = logging.getLogger(__name__)
 
 NAVI_URL = "https://apis-navi.kakaomobility.com/v1/directions"
 
@@ -77,7 +81,14 @@ def _call_kakao(o_lat, o_lng, d_lat, d_lng) -> tuple[int, int] | None:
             return None
         s = routes[0].get("summary", {})
         return int(s.get("distance", 0)), int(s.get("duration", 0))
-    except (httpx.HTTPError, ValueError, KeyError):
+    except Exception as e:  # noqa: BLE001
+        # 여기서 예외를 놓치면 지도 조회 전체가 500 이 된다.
+        # 길찾기는 '있으면 좋은' 정보고 없으면 추정식으로 대체되므로,
+        # 어떤 이유로 실패하든(타임아웃·쿼터초과·DNS·프록시·라이브러리 누락)
+        # 조용히 None 을 돌려주고 서비스는 계속 굴러가야 한다.
+        # 발표 중 카카오 API 가 흔들려서 지도가 통째로 죽는 걸 막는 안전장치.
+        logger.warning("카카오 길찾기 실패 → 추정치로 대체: %s: %s",
+                       type(e).__name__, str(e)[:120])
         return None
 
 

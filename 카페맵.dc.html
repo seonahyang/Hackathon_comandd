@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="_ds/modernist-6b200a6e-313f-44df-be98-797f26f46a53/styles.css">
 <script src="_ds/modernist-6b200a6e-313f-44df-be98-797f26f46a53/_ds_bundle.js"></script>
 <script src="./image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
 body{margin:0;background:#f6f1e8;font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased}
@@ -80,6 +81,11 @@ textarea{font-family:Pretendard,sans-serif}
 </g>
 </svg>
 
+<!-- 카카오맵. 로딩 실패 시 투명하게 남고 위 SVG 가 폴백으로 보인다 -->
+<div id="kakao-map" style="position:absolute;inset:0;z-index:2"></div>
+<div style="{{ mapWarn }}">{{ mapWarnText }}</div>
+
+
 <sc-for list="{{ markers }}" as="m" hint-placeholder-count="6">
 <div onClick="{{ m.select }}" style="{{ m.wrap }}">
 <div style="{{ m.badge }}">{{ m.badgeText }}</div>
@@ -91,8 +97,8 @@ textarea{font-family:Pretendard,sans-serif}
 </div>
 </sc-for>
 
-<div style="position:absolute;left:196px;top:566px;width:14px;height:14px;background:#2f6df6;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
-<div style="position:absolute;left:190px;top:560px;width:26px;height:26px;border-radius:50%;background:#2f6df6;animation:ping 2.2s ease-out infinite"></div>
+<div style="{{ meDot }}"></div>
+<div style="{{ meRing }}"></div>
 </div>
 
 <div style="position:absolute;z-index:10;top:58px;left:0;right:0;padding:0 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px">
@@ -289,6 +295,9 @@ textarea{font-family:Pretendard,sans-serif}
 <span style="font:600 11.5px/1 Pretendard,sans-serif;color:#a79c8a">2% 캐시백</span>
 <span style="font:700 13px/1 Pretendard,sans-serif;color:#17a06a">{{ cashbackLabel }}</span>
 </div>
+<div style="{{ receiptNote }}">{{ receiptNoteText }}</div>
+<div style="display:none">
+</div>
 <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
 <span style="font:600 11.5px/1 Pretendard,sans-serif;color:#a79c8a">{{ bonusLabel }}</span>
 <span style="font:700 13px/1 Pretendard,sans-serif;color:#17a06a">{{ bonusAmountLabel }}</span>
@@ -344,6 +353,7 @@ textarea{font-family:Pretendard,sans-serif}
 </sc-for>
 </div>
 <button onClick="{{ submit }}" style="{{ submitStyle }}">{{ submitLabel }}</button>
+<div style="{{ submitNote }}">{{ submitError }}</div>
 <div style="{{ noticeStyle }}">
 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="{{ noticeColor }}" stroke-width="2.2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.6v5.2M12 16.4h.01"></path></svg>
 <span>{{ noticeText }}</span>
@@ -570,7 +580,7 @@ textarea{font-family:Pretendard,sans-serif}
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:840,&quot;height&quot;:1010}}">
 const ORANGE = '#f78708', BEIGE = '#fae6c1', BLUE = '#2f6df6', GREEN = '#17a06a', WARN = '#e2622f', INK = '#3d372f';
 
-const STORES = [
+const DEMO_STORES = [
   { id: 's1', name: '카페 한담', x: 148, y: 268, reward: 0, tag: '카공 성지', meta: '애월읍 한담해변 · 4.8 (312) · 아메리카노 5,000', status: '여유롭게 2시간', urgent: false, walk: '도보 4분', seat: '12석 여유', plug: '좌석당 1구', close: '22:00', why: '지금 좌석 점유율 40%, 마감까지 4시간 — 이동 시간을 더해도 2시간 작업이 여유롭습니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','지금 영업중','조용한 곳'] },
   { id: 's2', name: '소길리 창고', x: 74, y: 452, reward: 800, tag: '외곽', meta: '애월읍 소길리 · 리뷰 12개 · 도심에서 6.4km', status: '여유롭게 4시간', urgent: false, walk: '차 12분', seat: '20석 여유', plug: '전 좌석', close: '23:00', why: '리뷰가 12개뿐인 외곽 매장이라 방문 후 리뷰를 남기면 800P가 추가 적립됩니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','리뷰 적립','지금 영업중','조용한 곳','주차'] },
   { id: 's3', name: '브루하우스 애월', x: 268, y: 232, reward: 0, tag: '', meta: '애월해안로 · 4.4 (521) · 아메리카노 5,500', status: '마감까지 1시간 20분', urgent: true, walk: '도보 7분', seat: '3석 여유', plug: '창가만', close: '19:30', why: '마감 1시간 20분 전이라 "여유롭게 2시간" 조건에 미달합니다. 짧게 머무를 때만 추천.', filters: ['지금 영업중','콘센트'] },
@@ -578,6 +588,176 @@ const STORES = [
   { id: 's5', name: '데일리 빈 한림', x: 198, y: 430, reward: 0, tag: '', meta: '한림읍 · 4.2 (204) · 아메리카노 4,300', status: '마감까지 45분', urgent: true, walk: '도보 3분', seat: '8석 여유', plug: '없음', close: '18:45', why: '콘센트가 없고 마감이 45분 남아 장시간 작업에는 맞지 않습니다.', filters: ['지금 영업중','주차'] },
   { id: 's6', name: '노트 커피바', x: 300, y: 348, reward: 0, tag: '', meta: '곽지과물해변 앞 · 4.5 (410) · 아메리카노 5,000', status: '여유롭게 3시간', urgent: false, walk: '도보 6분', seat: '6석 여유', plug: '좌석당 2구', close: '21:00', why: '좌석은 다소 붐비지만 콘센트가 넉넉하고 마감까지 3시간 남았습니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','지금 영업중'] },
 ];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   백엔드 연동 계층
+   위 DEMO_STORES 는 폴백이다. 서버가 살아있으면 실데이터로 통째로 교체된다.
+   발표 중 서버가 죽어도 화면은 그대로 돌아가야 하므로 폴백을 지우지 않는다.
+   ══════════════════════════════════════════════════════════════════════════ */
+let STORES = DEMO_STORES;
+let SAVED_LIVE = null;
+
+/* 백엔드 주소 결정 규칙
+     1) ?api=... 쿼리가 있으면 그걸 쓴다 (다른 PC의 서버를 볼 때)
+     2) file:// 로 파일을 직접 열었으면 로컬 서버를 찾는다
+     3) 그 외에는 항상 '같은 출처' — 이 페이지를 내려준 서버가 곧 백엔드다
+
+   3번이 중요하다. 예전엔 'port가 8000이면 같은 출처'로 판단했는데,
+   배포하면 포트가 443(https)이라 조건이 안 맞아서 방문자 본인 PC의
+   127.0.0.1:8000 을 부르게 된다 — 남의 컴퓨터에선 당연히 아무것도 없다. */
+const API = new URLSearchParams(location.search).get('api')
+  || (location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '');
+
+let SB = null;              // Supabase 클라이언트
+let AUTH_REQUIRED = true;
+
+async function getToken() {
+  if (!SB) return null;
+  const { data } = await SB.auth.getSession();
+  return data.session ? data.session.access_token : null;   // 매번 새로 꺼낸다
+}
+
+async function call(path, opts) {
+  opts = opts || {};
+  const tk = await getToken();
+  const headers = Object.assign(
+    { 'Content-Type': 'application/json' },
+    tk ? { Authorization: 'Bearer ' + tk } : {},
+    opts.headers || {}
+  );
+  const res = await fetch(API + path, Object.assign({}, opts, { headers }));
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.detail || (res.status + ' ' + res.statusText));
+  return body;
+}
+
+/* 목업 지도는 실제 지도가 아니라 402×874 SVG에 핀을 픽셀로 찍는다.
+   그래서 위경도를 그 캔버스 위로 투영한다. 제주 전체가 들어가도록 잡은 값. */
+const GEO = { latN: 33.60, latS: 33.10, lngW: 126.14, lngE: 126.99 };
+const PIN = { x0: 42, x1: 360, y0: 214, y1: 596 };
+
+function project(lat, lng) {
+  const cl = v => Math.min(1, Math.max(0, v));
+  return {
+    x: Math.round(PIN.x0 + cl((lng - GEO.lngW) / (GEO.lngE - GEO.lngW)) * (PIN.x1 - PIN.x0)),
+    y: Math.round(PIN.y0 + cl((GEO.latN - lat) / (GEO.latN - GEO.latS)) * (PIN.y1 - PIN.y0)),
+  };
+}
+
+/* 혼잡도는 공공데이터에 없다. 핫스팟과의 거리로 '추정'만 한다.
+   실측인 척하지 않으려고 UI에도 '추정'으로 표기한다. */
+function crowdOf(s) {
+  if (s.crowd && CROWD[s.crowd]) return s.crowd;
+  if (s.distHot == null) return CROWD_OF[s.id] || 'mid';
+  return s.distHot >= 5 ? 'low' : s.distHot <= 1.5 ? 'high' : 'mid';
+}
+
+/* ══ 카카오맵 ═════════════════════════════════════════════════════════════
+   지도는 '배경 그림'이 아니라 실제 지도여야 한다. 확대·이동이 되고 핀이 같이
+   따라붙어야 지도로서 의미가 있다. 그래서 카카오맵이 화면을 소유하고, 핀 위치는
+   지도가 움직일 때마다 위경도 → 화면픽셀로 다시 계산한다.
+
+   목업의 핀 디자인(적립금 뱃지·말풍선)은 그대로 쓴다. 카카오 기본 마커로 바꾸면
+   '리뷰 +3,700P' 뱃지를 잃어버리는데, 그게 이 서비스의 핵심 화면이다. */
+const JEJU_CENTER = { lat: 33.376, lng: 126.541 };
+
+function loadKakaoSdk(key) {
+  return new Promise((resolve, reject) => {
+    if (!key) return reject(new Error('KAKAO_JS_KEY 미설정'));
+    if (window.kakao && window.kakao.maps && window.kakao.maps.Map) return resolve();
+
+    // onload/onerror 가 둘 다 안 오는 경우가 있다(네트워크 차단·프록시).
+    // 타임아웃이 없으면 promise 가 영원히 멈춰서 실패 안내조차 못 띄운다.
+    const timer = setTimeout(
+      () => reject(new Error('카카오맵 응답 없음 (네트워크 확인)')), 8000);
+    const done = (fn) => (...a) => { clearTimeout(timer); fn(...a); };
+
+    const s = document.createElement('script');
+    // autoload=false → 스크립트만 받고 kakao.maps.load() 로 우리가 초기화 시점을 잡는다
+    s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=' + key;
+    s.onload = () => {
+      if (!window.kakao || !window.kakao.maps) {
+        return done(reject)(new Error('SDK 로드됐으나 초기화 실패 (키 확인)'));
+      }
+      window.kakao.maps.load(() => done(resolve)());
+    };
+    s.onerror = done(reject).bind(null, new Error('SDK 로드 실패 (도메인 등록 확인)'));
+    document.head.appendChild(s);
+  });
+}
+
+/* 핀이 겹치지 않게 격자 한 칸당 한 곳만 남긴다.
+   가까운 순으로 자르면 도심에만 몰리고, 무작위로 뽑으면 매번 화면이 달라진다.
+   격자 방식은 결과가 항상 같으면서 섬 전체에 고르게 퍼진다. */
+function spread(list, max) {
+  const CELL = 46;                       // 픽셀. 카드 크기 고려한 최소 간격
+  const taken = new Set();
+  const out = [];
+  for (const s of list) {
+    const key = Math.round(s.x / CELL) + ':' + Math.round(s.y / CELL);
+    if (taken.has(key)) continue;
+    taken.add(key);
+    out.push(s);
+    if (out.length >= max) break;
+  }
+  return out.length >= 6 ? out : list.slice(0, max);   // 너무 적으면 그냥 앞에서 자른다
+}
+
+/* 백엔드 카페 1건 → 목업이 기대하는 STORE 모양 */
+function toStore(c) {
+  const st = c.stay || {};
+  const p = project(c.lat, c.lng);
+  const f = [];
+  if (st.stay_ok)          f.push('여유롭게 2시간');
+  if (c.cagong_ok)         f.push('카공 가능');
+  if (c.is_remote)         f.push('리뷰 적립');
+  if (c.has_power)         f.push('콘센트');
+  if (st.open_now)         f.push('지금 영업중');
+  if (c.quiet)             f.push('조용한 곳');
+  if (c.parking)           f.push('주차');
+
+  let why;
+  if (st.break_time && st.sit_from) {
+    why = '브레이크 타임 ' + st.break_time + ' 이라 ' + st.sit_from + '부터 앉을 수 있습니다.';
+  } else if (st.reason === 'break_time') {
+    why = '브레이크 타임 ' + st.break_time + ' 에 걸려 2시간을 연속으로 있기 어렵습니다.';
+  } else if (c.reward.is_boosted) {
+    const 이유 = c.is_remote
+      ? '도심에서 ' + c.dist_to_hotspot_km + 'km 떨어진 외곽 매장'
+      : '리뷰가 ' + c.review_count + '개뿐인 저노출 매장';
+    why = 이유 + '이라, 다녀와서 리뷰를 남기면 '
+        + c.reward.point.toLocaleString() + 'P가 적립됩니다.';
+  } else {
+    why = st.label || (c.open_time + '~' + c.close_time + ' 영업');
+  }
+  if (c.cagong_source === 'estimated') {
+    why += ' (콘센트·와이파이는 아직 제보 전이라 미확인입니다)';
+  }
+
+  return {
+    id: 'c' + c.id,
+    cafeId: c.id,
+    name: c.name,
+    lat: c.lat, lng: c.lng,      // 카카오맵 투영에 쓴다
+    x: p.x, y: p.y,              // 지도 로딩 전/실패 시 쓰는 폴백 좌표
+    distHot: c.dist_to_hotspot_km,
+    reward: c.reward.is_boosted ? c.reward.point : 0,
+    tag: c.is_remote ? '외곽' : (c.cagong_ok ? '카공 성지' : ''),
+    meta: [c.district, '리뷰 ' + c.review_count + '개',
+           '도심에서 ' + c.dist_to_hotspot_km + 'km'].filter(Boolean).join(' · '),
+    status: st.label || (c.open_time + '~' + c.close_time),
+    urgent: !st.stay_ok,
+    walk: c.travel_min != null
+      ? '차 ' + c.travel_min + '분' + (c.travel_source === 'kakao' ? ' (실측)' : '')
+      : '-',
+    seat: c.seat_count ? c.seat_count + '석' : '좌석 미확인',
+    plug: c.has_power ? '콘센트 있음' : '미확인',
+    close: c.close_time,
+    why: why,
+    filters: f,
+  };
+}
+
 
 const CHIPS = ['여유롭게 2시간','카공 가능','리뷰 적립','콘센트','지금 영업중','조용한 곳','주차'];
 const CROWD_OF = { s1: 'high', s2: 'low', s3: 'mid', s4: 'low', s5: 'mid', s6: 'mid' };
@@ -610,12 +790,140 @@ const BASE_LEDGER = [
 
 class Component extends DCLogic {
   state = {
-    active: ['여유롭게 2시간','카공 가능'], selected: 's1', expanded: null, sheet: 'peek',
+    active: [], selected: 's1', expanded: null, sheet: 'peek',
     savedIds: ['s1','s2','s4','s6'], focus: null, screen: 'map', menu: false, done: false, walletTab: 'ledger', alarm: true, loggedIn: false, provider: '', signing: '',
-    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, points: 12400, month: 2200, reviewCount: 12,
+    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', points: 12400, month: 2200, reviewCount: 12,
     ledger: BASE_LEDGER, lastEarned: 0, withdraw: false, wdAmount: 10000,
   };
   listRef = React.createRef();
+
+  /* ══ 백엔드에서 실제 매장을 받아온다 ═══════════════════════════════
+     실패하면 아무것도 하지 않는다 → DEMO_STORES 가 그대로 남아 화면은 살아있다. */
+  componentDidMount() {
+    fetch(API + '/api/auth/config')
+      .then(r => r.json())
+      .then(cfg => {
+        AUTH_REQUIRED = cfg.auth_required;
+        if (cfg.supabase_url && cfg.supabase_anon_key && window.supabase) {
+          SB = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
+          SB.auth.onAuthStateChange((_e, sess) => { if (sess) this.syncMe(); });
+        }
+        // 지도 키도 백엔드가 내려준다 → HTML 에 키를 박아둘 필요가 없다
+        this.initMap(cfg.kakao_js_key);
+        return getToken();
+      })
+      .then(tk => { if (tk || !AUTH_REQUIRED) this.syncMe(); })
+      .catch(() => {});
+
+    this.loadStores();
+  }
+
+  /* 지도를 띄운다. 실패해도 예외를 삼킨다 — 손그림 폴백이 남아있다. */
+  initMap(key) {
+    return loadKakaoSdk(key).then(() => {
+      // 템플릿 렌더가 아직 안 끝났을 수 있다. 몇 번 더 찾아본다.
+      return new Promise((resolve, reject) => {
+        let tries = 0;
+        const find = () => {
+          const el = document.getElementById('kakao-map');
+          if (el) return resolve(el);
+          if (++tries > 20) return reject(new Error('지도 컨테이너를 찾지 못함'));
+          setTimeout(find, 100);
+        };
+        find();
+      });
+    }).then(el => {
+
+      const kakao = window.kakao;
+      this._map = new kakao.maps.Map(el, {
+        center: new kakao.maps.LatLng(JEJU_CENTER.lat, JEJU_CENTER.lng),
+        level: 11,                       // 제주 전체가 한 화면에 들어오는 배율
+      });
+
+      // 드래그 중에는 이벤트가 초당 수십 번 온다. 그때마다 setState 하면 버벅인다.
+      // 프레임당 한 번으로 묶는다.
+      let queued = false;
+      const sync = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; this.syncPins(); });
+      };
+      ['center_changed', 'zoom_changed', 'bounds_changed', 'idle']
+        .forEach(ev => kakao.maps.event.addListener(this._map, ev, sync));
+
+      this.setState({ mapReady: true });
+      this.fitToStores();
+    }).catch(err => {
+      console.warn('[카카오맵 미사용]', err.message, '— 손그림 지도로 표시합니다');
+      this.setState({ mapReady: false, mapError: err.message });
+    });
+  }
+
+  /* 위경도 → 화면 픽셀. 지도가 움직일 때마다 핀 좌표를 다시 찍는다. */
+  syncPins() {
+    const kakao = window.kakao;
+    if (!this._map || !kakao) return;
+
+    const proj = this._map.getProjection();
+    for (const s of STORES) {
+      if (s.lat == null) continue;
+      const pt = proj.containerPointFromCoords(new kakao.maps.LatLng(s.lat, s.lng));
+      s.x = Math.round(pt.x);
+      s.y = Math.round(pt.y);
+    }
+    // 내 위치(제주시청)도 같이 따라와야 한다. 고정 픽셀로 두면 지도만 움직여서 어색하다.
+    const me = proj.containerPointFromCoords(
+      new kakao.maps.LatLng(33.4996, 126.5312));
+    this._me = { x: Math.round(me.x), y: Math.round(me.y) };
+
+    this.setState({ mapTick: (this.state.mapTick || 0) + 1 });
+  }
+
+  /* 받아온 매장이 전부 보이도록 지도 범위를 맞춘다. */
+  fitToStores() {
+    const kakao = window.kakao;
+    if (!this._map || !kakao || !STORES.length || STORES[0].lat == null) return;
+
+    const b = new kakao.maps.LatLngBounds();
+    STORES.forEach(s => b.extend(new kakao.maps.LatLng(s.lat, s.lng)));
+    this._map.setBounds(b, 60, 40, 220, 40);   // 하단은 바텀시트가 가리므로 여유를 더 준다
+    this.syncPins();
+  }
+
+  loadStores() {
+    // 가까운 순 40곳만 받으면 핀이 전부 제주시청 주변에 뭉쳐서 지도가 안 읽힌다.
+    // 섬 전체를 받아온 뒤 격자로 솎아내 고르게 흩뿌린다.
+    // precise=true → 가까운 순 상위 10곳만 카카오모빌리티 길찾기로 실제 도로
+    // 소요시간을 잰다. 200곳 전부 호출하면 쿼터가 순식간에 녹고 응답도 느려진다.
+    // 결과는 route_cache 에 좌표 100m 단위로 캐시되므로 재조회는 공짜다.
+    const q = 'place_type=cafe&limit=200&sort=reward&precise=true&precise_top=10'
+            + '&lat=33.4996&lng=126.5312&radius_km=80';
+    return call('/api/cafes?' + q).then(data => {
+      if (!data.items.length) return;
+
+      STORES = spread(data.items.map(toStore), 40);
+      SAVED_LIVE = STORES.slice(0, 7).map((s, i) => ({
+        id: s.id, name: s.name, reward: s.reward, crowd: crowdOf(s),
+        meta: s.meta, status: s.status, urgent: s.urgent,
+        savedAt: '최근 조회',
+      }));
+
+      // 더미 id('s1','s2'…)를 가리키던 상태를 실제 id로 옮긴다.
+      // 안 하면 store()가 매번 첫 매장으로 폴백해서 엉뚱한 곳이 열린다.
+      this.setState({
+        live: true,
+        totalCount: data.total,
+        selected: STORES[0].id,
+        reviewStore: (STORES.find(s => s.reward > 0) || STORES[0]).id,
+        savedIds: STORES.slice(0, 4).map(s => s.id),
+        expanded: null,
+        focus: null,
+      });
+      this.fitToStores();     // 새로 받은 매장이 전부 화면에 들어오게
+    }).catch(err => {
+      console.warn('[백엔드 미연결] 목업 데이터로 표시합니다:', err.message);
+    });
+  }
 
   visible() {
     const a = this.state.active;
@@ -633,34 +941,173 @@ class Component extends DCLogic {
   signIn(provider) {
     if (this.state.signing) return;
     this.setState({ signing: provider });
-    clearTimeout(this._authT);
-    this._authT = setTimeout(() => this.setState({ loggedIn: true, provider, signing: '' }), 1100);
+
+    // Supabase 가 없으면(설정 누락·오프라인) 예전처럼 가짜 로그인으로 넘어간다.
+    // 발표 중 네트워크가 끊겨도 화면 흐름은 보여줄 수 있어야 한다.
+    if (!SB) {
+      clearTimeout(this._authT);
+      this._authT = setTimeout(
+        () => this.setState({ loggedIn: true, provider, signing: '' }), 1100);
+      return;
+    }
+
+    SB.auth.signInWithOAuth({
+      provider: provider,                       // 'google' | 'kakao'
+      options: { redirectTo: window.location.href },
+    }).then(r => {
+      // 성공하면 페이지가 OAuth 창으로 넘어가므로 여기 아래는 실패 경로다.
+      if (r.error) this.setState({ signing: '', authError: r.error.message });
+    });
   }
-  cashback() { return this.state.receipt === 'ok' ? Math.round(this.state.receiptAmount * 0.02) : 0; }
+
+  /* 로그인 상태를 백엔드와 맞춘다. 최초 로그인이면 users 행이 여기서 생성된다. */
+  syncMe() {
+    return call('/api/auth/me').then(me => {
+      this.setState({
+        loggedIn: true,
+        provider: me.provider || '',
+        signing: '',
+        userId: me.id,
+        nickname: me.nickname,
+        points: me.point_balance,
+      });
+      return call('/api/users/' + me.id + '/points').then(p => {
+        this.setState({
+          reviewCount: p.review_count,
+          ledger: p.history.length ? p.history.map(h => ({
+            id: 'L' + h.id,
+            title: h.reason,
+            sub: (h.created_at || '').slice(0, 10) + (h.amount > 0 ? ' · 적립' : ' · 사용'),
+            amount: h.amount,
+            kind: h.amount > 0 ? (h.amount > 500 ? 'reward' : 'plain') : 'spend',
+          })) : BASE_LEDGER,
+        });
+      }).catch(() => {});
+    }).catch(() => { this.setState({ signing: '' }); });
+  }
+  cashback() {
+    if (this.state.receipt !== 'ok') return 0;
+    // 서버가 내려준 값을 우선 쓴다. 요율이 바뀌어도 화면과 지급액이 어긋나지 않는다.
+    if (this.state.receiptCashback != null) return this.state.receiptCashback;
+    return Math.round(this.state.receiptAmount * 0.02);
+  }
   earned() {
     const s = this.store(this.state.reviewStore);
+    // 실데이터일 때는 서버가 내려준 적립금(reward)이 이미 정책 전액이다.
+    // 목업 시절 공식(+100 등)을 덧붙이면 실제 지급액과 화면이 어긋난다.
+    if (s.cafeId) return (s.reward || 500) + this.cashback();
     const catBonus = Object.keys(this.state.cats).length === CATS.length ? 100 : 0;
     return (s.reward || 100) + 100 + catBonus + this.cashback();
   }
+  /* 영수증 인증 — 사진을 백엔드로 올려 CLOVA OCR 로 금액·매장명을 읽는다.
+     CLOVA Secret 은 서버에만 있으므로 프론트는 우리 API 만 부른다. */
   scan(source) {
-    const amounts = [12400, 8600, 15200, 9800];
-    this.setState({ receipt: 'scanning', receiptSource: source });
-    clearTimeout(this._scanT);
-    this._scanT = setTimeout(() => {
-      this.setState({ receipt: 'ok', receiptAmount: amounts[Math.floor(Math.random() * amounts.length)] });
-    }, 1500);
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    // 모바일에서 '카메라 촬영'을 누르면 앨범 대신 카메라가 바로 열리게 한다
+    if (source && source.indexOf('카메라') >= 0) input.capture = 'environment';
+
+    input.onchange = () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      this.setState({ receipt: 'scanning', receiptSource: source, receiptError: '' });
+
+      const store = this.store(this.state.reviewStore);
+      const fd = new FormData();
+      fd.append('file', file);
+      if (store && store.cafeId) fd.append('cafe_id', String(store.cafeId));
+
+      fetch(API + '/api/receipts', { method: 'POST', body: fd })
+        .then(res => res.json().then(b => ({ ok: res.ok, status: res.status, body: b })))
+        .then(({ ok, status, body }) => {
+          if (!ok) {
+            // 422 = 다시 찍으면 해결됨 / 503 = 서버·설정 문제
+            // FastAPI 의 유효성 오류는 detail 이 배열(객체 목록)로 온다.
+            // 그대로 찍으면 사용자 화면에 JSON 덩어리가 노출된다.
+            const d = body.detail;
+            const msg = typeof d === 'string' ? d
+              : Array.isArray(d) ? (d[0] && d[0].msg ? d[0].msg : '요청 형식이 올바르지 않아요')
+              : '영수증 인식에 실패했어요';
+            this.setState({
+              receipt: 'none',
+              receiptError: status === 503
+                ? msg + ' (관리자 확인 필요)'
+                : msg,
+            });
+            return;
+          }
+          this.setState({
+            receipt: 'ok',
+            receiptAmount: body.total_price,
+            receiptStore: body.store_name || '',
+            receiptMatched: body.store_matched,
+            receiptCashback: body.cashback,
+            receiptError: body.store_matched === false ? body.message : '',
+          });
+        })
+        .catch(err => this.setState({
+          receipt: 'none',
+          receiptError: '업로드에 실패했어요: ' + err.message,
+        }));
+    };
+
+    input.click();
   }
   submit() {
-    if (this.state.receipt !== 'ok') return;
-    if (this.state.rating === 0 || this.state.text.trim().length < 5) return;
-    const s = this.store(this.state.reviewStore), gain = this.earned();
+    // 영수증은 캐시백 조건일 뿐, 리뷰를 막지 않는다.
+    // (예전엔 여기서 조용히 return 해서 '버튼을 눌러도 아무 일도 안 나는' 상태였다)
+    if (this.state.rating === 0 || this.state.text.trim().length < 5) {
+      this.setState({ submitError: '별점과 후기(5자 이상)를 입력해 주세요' });
+      return;
+    }
+    if (this._posting) return;
+
+    const s = this.store(this.state.reviewStore);
+
+    // 실제 매장이 아니면(백엔드 미연결) 예전처럼 화면상으로만 처리한다.
+    if (!s.cafeId) return this.finishReview(s, this.earned());
+
+    this._posting = true;
+    // 태그는 체크한 카테고리 응답을 그대로 보낸다 — 나중에 카공 정보 제보로 이어진다.
+    const tags = Object.keys(this.state.cats).map(k => this.state.cats[k]).filter(Boolean);
+
+    call('/api/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        cafe_id: s.cafeId,
+        rating: this.state.rating,
+        content: this.state.text,
+        tags: tags,
+      }),
+    }).then(r => {
+      this._posting = false;
+      // 적립금은 프론트가 계산하지 않는다. 서버가 정책대로 계산한 값을 그대로 쓴다.
+      this.finishReview(s, r.earned_point, r.point_balance, r.headline);
+      this.loadStores();     // 리뷰가 달렸으니 희소성 보너스가 줄어든다 → 목록 갱신
+    }).catch(err => {
+      this._posting = false;
+      // 409(이미 작성함), 401(로그인 필요) 등 이유가 사용자에게 보여야 한다.
+      // alert 은 목업 화면 밖으로 튀어나와 시연에서 어색하므로 화면 안에 띄운다.
+      this.setState({ submitError: err.message });
+    });
+  }
+
+  finishReview(s, gain, balance, headline) {
     this.setState({
       done: true,
-      points: this.state.points + gain,
+      submitError: '',
+      points: balance != null ? balance : this.state.points + gain,
       month: this.state.month + gain,
       reviewCount: this.state.reviewCount + 1,
       lastEarned: gain,
-      ledger: [{ id: 'n' + Date.now(), title: s.name + ' 리뷰', sub: '방금 전 · ' + (s.reward ? '외곽 보너스 포함' : '일반 매장'), amount: gain, kind: s.reward ? 'reward' : 'plain' }].concat(this.state.ledger),
+      ledger: [{
+        id: 'n' + Date.now(),
+        title: s.name + ' 리뷰',
+        sub: headline || ('방금 전 · ' + (s.reward ? '외곽 보너스 포함' : '일반 매장')),
+        amount: gain,
+        kind: s.reward ? 'reward' : 'plain',
+      }].concat(this.state.ledger),
     });
   }
 
@@ -668,12 +1115,12 @@ class Component extends DCLogic {
     const st = this.state, vis = this.visible(), sel = st.selected, exp = st.expanded;
     const active = st.active, full = st.sheet === 'full';
     const rs = this.store(st.reviewStore);
-    const savedList = SAVED.filter(v => {
+    const savedList = (SAVED_LIVE || SAVED).filter(v => {
       const match = STORES.find(s => s.name === v.name);
       return !match || st.savedIds.includes(match.id);
     });
     const hasReceipt = st.receipt === 'ok';
-    const ready = hasReceipt && st.rating > 0 && st.text.trim().length >= 5;
+    const ready = st.rating > 0 && st.text.trim().length >= 5;
     const panel = (on) => `position:absolute;z-index:50;inset:0;display:flex;flex-direction:column;background:#fdf8ef;transform:translateX(${on ? 0 : 100}%);opacity:${on ? 1 : 0};pointer-events:${on ? 'auto' : 'none'};transition:transform .34s cubic-bezier(.2,.8,.2,1),opacity .2s`;
     const tab = (on) => `flex:1;padding:12px;border:none;border-radius:999px;font:700 13px/1 Pretendard,sans-serif;cursor:pointer;background:${on ? INK : '#fff'};color:${on ? '#fff' : '#a79c8a'};box-shadow:0 2px 8px rgba(120,90,40,.09)`;
 
@@ -708,7 +1155,7 @@ class Component extends DCLogic {
       savedStyle: panel(st.screen === 'saved'),
       savedCount: savedList.length,
       saved: savedList.map(v => {
-        const c = CROWD[v.crowd];
+        const c = CROWD[v.crowd] || CROWD.mid;
         return {
           name: v.name, meta: v.meta, status: v.status, savedAt: v.savedAt,
           open: () => this.setState({ screen: 'map', focus: STORES.some(s => s.name === v.name) ? (STORES.find(s => s.name === v.name) || {}).id : null, sheet: 'full' }),
@@ -798,6 +1245,25 @@ class Component extends DCLogic {
         };
       }),
 
+      // 지도가 안 뜬 이유를 화면에 보여준다. 콘솔만 찍으면 아무도 안 본다.
+      mapWarn: st.mapError
+        ? 'position:absolute;z-index:8;left:14px;right:14px;top:118px;padding:10px 12px;'
+          + 'border-radius:12px;background:rgba(226,98,47,.94);color:#fff;'
+          + 'font:700 11.5px/1.5 Pretendard,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18)'
+        : 'display:none',
+      mapWarnText: st.mapError === 'KAKAO_JS_KEY 미설정'
+        ? '지도 미연결 · .env 의 KAKAO_JS_KEY 를 채우고 서버를 재시작하세요'
+        : '지도 미연결 · ' + (st.mapError || '') + ' (카카오 콘솔에 도메인 등록 확인)',
+
+      // 내 위치. 지도가 켜져 있으면 투영 좌표, 아니면 목업의 원래 자리.
+      meDot: `position:absolute;z-index:4;left:${(this._me ? this._me.x : 196) - 7}px;`
+        + `top:${(this._me ? this._me.y : 566) - 7}px;width:14px;height:14px;`
+        + 'background:#2f6df6;border:3px solid #fff;border-radius:50%;'
+        + 'box-shadow:0 2px 6px rgba(0,0,0,.25)',
+      meRing: `position:absolute;z-index:3;left:${(this._me ? this._me.x : 196) - 13}px;`
+        + `top:${(this._me ? this._me.y : 566) - 13}px;width:26px;height:26px;`
+        + 'border-radius:50%;background:#2f6df6;animation:ping 2.2s ease-out infinite',
+
       markers: vis.map(s => {
         const isSel = s.id === sel, color = s.reward ? GREEN : BLUE;
         return {
@@ -816,13 +1282,13 @@ class Component extends DCLogic {
         id: s.id, name: s.name, meta: s.meta, status: s.status, walk: s.walk, tag: s.tag,
         seat: s.seat, plug: s.plug, close: s.close, why: s.why,
         rank: String(i + 1),
-        crowd: '지금 ' + CROWD[CROWD_OF[s.id]].label,
+        crowd: (s.distHot != null ? '추정 ' : '지금 ') + CROWD[crowdOf(s)].label,
         saveFill: st.savedIds.includes(s.id) ? ORANGE : 'none',
         saveStroke: st.savedIds.includes(s.id) ? ORANGE : '#c0b5a1',
         saveBtn: `margin-top:2px;width:34px;height:34px;border:1.5px solid ${st.savedIds.includes(s.id) ? '#fae6c1' : '#f0e8da'};border-radius:12px;background:${st.savedIds.includes(s.id) ? '#fff7ec' : '#fff'};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s`,
         toggleSave: (e) => { if (e) e.stopPropagation(); this.setState({ savedIds: st.savedIds.includes(s.id) ? st.savedIds.filter(x => x !== s.id) : st.savedIds.concat(s.id) }); },
-        crowdStyle: `display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:${CROWD[CROWD_OF[s.id]].bg};color:${CROWD[CROWD_OF[s.id]].color};font:700 10px/1 Pretendard,sans-serif;white-space:nowrap`,
-        crowdDot: `width:5px;height:5px;border-radius:50%;background:${CROWD[CROWD_OF[s.id]].color}`,
+        crowdStyle: `display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:${CROWD[crowdOf(s)].bg};color:${CROWD[crowdOf(s)].color};font:700 10px/1 Pretendard,sans-serif;white-space:nowrap`,
+        crowdDot: `width:5px;height:5px;border-radius:50%;background:${CROWD[crowdOf(s)].color}`,
         point: s.reward ? '+' + s.reward.toLocaleString() + 'P' : '',
         select: () => this.pick(s.id),
         review: (e) => { if (e) e.stopPropagation(); this.setState({ screen: 'review', reviewStore: s.id, rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '' }); },
@@ -864,6 +1330,15 @@ class Component extends DCLogic {
       uploadReceipt: () => this.scan('파일 업로드'),
       resetReceipt: () => this.setState({ receipt: 'none', receiptSource: '' }),
       receiptSourceText: st.receiptSource || '이미지',
+      // 인식 결과/오류를 사용자에게 그대로 보여준다. 조용히 실패하면 왜 안 되는지 모른다.
+      receiptNote: st.receiptError
+        ? 'margin-top:8px;padding:9px 11px;border-radius:10px;background:#fdeee7;'
+          + 'color:#9a3412;font:700 11.5px/1.55 Pretendard,sans-serif'
+        : st.receiptStore
+          ? 'margin-top:8px;padding:9px 11px;border-radius:10px;background:#e6f4ec;'
+            + 'color:#0f7a50;font:700 11.5px/1.55 Pretendard,sans-serif'
+          : 'display:none',
+      receiptNoteText: st.receiptError || (st.receiptStore ? '영수증 상호: ' + st.receiptStore : ''),
       receiptState: `padding:5px 9px;border-radius:999px;font:700 10.5px/1 Pretendard,sans-serif;background:${hasReceipt ? '#e6f4ec' : st.receipt === 'scanning' ? '#fae6c1' : '#f5efe4'};color:${hasReceipt ? '#0f7a50' : st.receipt === 'scanning' ? '#a35d04' : '#a79c8a'}`,
       receiptStateText: hasReceipt ? '인증 완료' : st.receipt === 'scanning' ? '인식 중' : '미인증',
       receiptIdle: st.receipt === 'none' ? '' : 'display:none',
@@ -879,7 +1354,14 @@ class Component extends DCLogic {
         ? '적립금은 리뷰 등록 즉시 지급되며, 영수증 정보는 부정 적립 확인 용도로만 보관됩니다.'
         : '영수증 인증을 완료해야 리뷰를 등록할 수 있어요. 결제 당일 영수증만 인정됩니다.',
       submit: () => this.submit(),
-      submitLabel: !hasReceipt ? '영수증을 먼저 인증해 주세요' : ready ? '리뷰 등록하고 ' + this.earned().toLocaleString() + 'P 받기' : '별점과 후기를 입력해 주세요',
+      submitLabel: !ready ? '별점과 후기를 입력해 주세요'
+        : '리뷰 등록하고 ' + this.earned().toLocaleString() + 'P 받기'
+          + (hasReceipt ? '' : ' (영수증 인증 시 캐시백 추가)'),
+      submitError: st.submitError || '',
+      submitNote: st.submitError
+        ? 'margin-top:10px;padding:10px 12px;border-radius:10px;background:#fdeee7;'
+          + 'color:#9a3412;font:700 12px/1.5 Pretendard,sans-serif;text-align:center'
+        : 'display:none',
       submitStyle: `margin-top:20px;width:100%;padding:17px;border:none;border-radius:999px;font:800 14.5px/1 Pretendard,sans-serif;cursor:${ready ? 'pointer' : 'default'};background:${ready ? ORANGE : '#efe6d6'};color:${ready ? '#fff' : '#c0b5a1'};box-shadow:${ready ? '0 8px 20px rgba(247,135,8,.3)' : 'none'};transition:all .2s`,
 
       ledger: (st.walletTab === 'ledger' ? st.ledger : st.ledger.filter(h => h.kind !== 'spend')).map(h => ({
