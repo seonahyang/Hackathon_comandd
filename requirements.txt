@@ -1,0 +1,23 @@
+# 버전을 고정하지 않고 하한만 둡니다 (파이썬 3.11~3.13 어디서든 설치되도록)
+fastapi>=0.110
+uvicorn[standard]>=0.27
+SQLAlchemy>=2.0.25
+pydantic>=2.6
+pydantic-settings>=2.2
+python-dotenv>=1.0
+httpx>=0.27
+
+# Supabase Auth JWT 검증 (구글/카카오 로그인). crypto는 ES256/RS256 서명 검증용
+PyJWT[crypto]>=2.9
+
+# PostgreSQL/Supabase 연결용. SQLite만 쓸 거면 없어도 됩니다.
+# 설치가 실패하면 이 줄만 지우고 나머지를 설치하세요.
+psycopg2-binary>=2.9.9
+
+# 제주 관광공사 엑셀(data/iddy_fnb.xlsx) 적재용 — scripts/ingest_iddy.py
+# openpyxl 은 pandas 가 .xlsx 를 읽을 때 쓰는 엔진이라 같이 필요합니다.
+pandas>=2.0
+openpyxl>=3.1
+
+# 영수증 이미지 업로드(multipart/form-data) 수신용 — routers/receipts.py
+python-multipart>=0.0.9

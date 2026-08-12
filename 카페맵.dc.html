@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-6b200a6e-313f-44df-be98-797f26f46a53/styles.css">
+<script src="_ds/modernist-6b200a6e-313f-44df-be98-797f26f46a53/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+body{margin:0;background:#f6f1e8;font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#f78708;text-decoration:none}a:hover{color:#c96d05}
+.noscroll::-webkit-scrollbar{display:none}
+.noscroll{scrollbar-width:none}
+textarea{font-family:Pretendard,sans-serif}
+@keyframes ping{0%{transform:scale(1);opacity:.4}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+</style>
+</helmet>
+<div style="min-height:100vh;box-sizing:border-box;padding:56px 48px;display:flex;gap:56px;align-items:flex-start;justify-content:center;flex-wrap:wrap">
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="font:800 11px/1 Pretendard,sans-serif;letter-spacing:.06em;background:#f78708;color:#fff;padding:6px 10px;border-radius:999px">이디저디</span>
+<span style="font:700 14px/1.2 Pretendard,sans-serif;color:#3d372f">로그인 · 지도 · 리뷰 적립 · 지갑</span>
+</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" width="{{ 402 }}" height="{{ 874 }}" hint-size="402px,874px">
+
+<div style="position:absolute;inset:0;overflow:hidden;background:#fdf8ef;z-index:5">
+
+<div style="position:absolute;inset:0;overflow:hidden;z-index:1">
+<svg viewBox="0 0 402 874" style="position:absolute;inset:0;width:100%;height:100%">
+<rect width="402" height="874" fill="#fdf8ef"></rect>
+<path d="M-10 -10 H412 V150 C330 176 250 150 170 168 C90 186 30 170 -10 186 Z" fill="#cfe4ee"></path>
+<path d="M-10 150 C60 176 120 160 180 172 C260 188 330 172 412 148 L412 196 C330 218 250 200 172 210 C96 220 40 210 -10 226 Z" fill="#e7f1f6"></path>
+<path d="M40 300 C90 262 170 268 208 296 C252 328 240 388 196 406 C140 428 60 402 42 358 Z" fill="#e2ecd6"></path>
+<path d="M296 470 C336 452 384 470 396 502 C408 536 380 566 344 566 C304 566 282 534 288 504 Z" fill="#e2ecd6"></path>
+<g fill="#f5eddf">
+<rect x="24" y="248" width="72" height="46" rx="8"></rect>
+<rect x="228" y="238" width="88" height="52" rx="8"></rect>
+<rect x="44" y="446" width="94" height="56" rx="8"></rect>
+<rect x="242" y="392" width="82" height="52" rx="8"></rect>
+<rect x="150" y="500" width="110" height="54" rx="8"></rect>
+</g>
+<g stroke="#f0e4cf" stroke-width="15" fill="none" stroke-linecap="round">
+<path d="M-10 320 C110 300 240 350 412 318"></path>
+<path d="M-10 470 C120 452 260 500 412 466"></path>
+<path d="M120 200 C136 320 108 430 130 600"></path>
+<path d="M290 190 C276 320 306 430 286 600"></path>
+</g>
+<g stroke="#ffffff" stroke-width="9.5" fill="none" stroke-linecap="round">
+<path d="M-10 320 C110 300 240 350 412 318"></path>
+<path d="M-10 470 C120 452 260 500 412 466"></path>
+<path d="M120 200 C136 320 108 430 130 600"></path>
+<path d="M290 190 C276 320 306 430 286 600"></path>
+</g>
+<g stroke="#ffe7c0" stroke-width="16" fill="none" stroke-linecap="round"><path d="M-10 244 C130 226 260 268 412 236"></path></g>
+<g stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round">
+<path d="M60 244 C68 340 52 440 66 560"></path>
+<path d="M200 220 C208 340 192 440 206 580"></path>
+<path d="M350 250 C342 340 358 440 348 560"></path>
+<path d="M-10 396 C120 380 250 420 412 392"></path>
+<path d="M-10 546 C120 530 250 566 412 540"></path>
+</g>
+<g font-family="Pretendard,sans-serif" fill="#9fb5c2" font-size="12" font-weight="700">
+<text x="26" y="106">제주 앞바다</text>
+</g>
+<g font-family="Pretendard,sans-serif" fill="#ab9f8b" font-size="11" font-weight="600">
+<text x="150" y="204">한담해변</text>
+<text x="98" y="352">애월읍</text>
+<text x="252" y="300">곽지과물해변</text>
+<text x="60" y="512">소길리</text>
+<text x="298" y="520">저지리</text>
+</g>
+</svg>
+
+<!-- 카카오맵. 로딩 실패 시 투명하게 남고 위 SVG 가 폴백으로 보인다 -->
+<div id="kakao-map" style="position:absolute;inset:0;z-index:2"></div>
+<div style="{{ mapWarn }}">{{ mapWarnText }}</div>
+
+
+<sc-for list="{{ markers }}" as="m" hint-placeholder-count="6">
+<div onClick="{{ m.select }}" style="{{ m.wrap }}">
+<div style="{{ m.badge }}">{{ m.badgeText }}</div>
+<div style="{{ m.pin }}">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z"></path><path d="M17 9h2a2.5 2.5 0 0 1 0 5h-2"></path><path d="M5 21h13"></path></svg>
+</div>
+<div style="{{ m.tail }}"></div>
+<div style="{{ m.label }}">{{ m.name }}</div>
+</div>
+</sc-for>
+
+<div style="{{ meDot }}"></div>
+<div style="{{ meRing }}"></div>
+</div>
+
+<div style="position:absolute;z-index:10;top:58px;left:0;right:0;padding:0 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:8px">
+<button onClick="{{ openMenu }}" style="width:48px;height:48px;flex:none;border:none;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(120,90,40,.16);position:relative" style-hover="background:#fae6c1">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>
+<span style="position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:#f78708;border:2px solid #fff"></span>
+</button>
+<div style="flex:1;display:flex;align-items:center;background:#fff;border-radius:999px;box-shadow:0 6px 20px rgba(120,90,40,.16)">
+<div style="padding:0 6px 0 16px;display:flex;align-items:center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b0a695" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6"></path></svg>
+</div>
+<div style="flex:1;padding:15px 8px;font:600 15px/1 Pretendard,sans-serif;color:#3d372f">애월 · 한림 카페</div>
+<div style="width:1px;height:22px;background:#f0e8da"></div>
+<div style="width:48px;display:flex;align-items:center;justify-content:center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f78708" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
+</div>
+</div>
+</div>
+<div class="noscroll" style="display:flex;gap:7px;overflow-x:auto;margin:0 -14px;padding:3px 14px 4px">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="7">
+<button style="{{ c.style }}" style-hover="{{ c.hover }}" onClick="{{ c.toggle }}">{{ c.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="{{ legendStyle }}">
+<div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;background:#2f6df6;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.08)"></span><span style="font:600 11px/1 Pretendard,sans-serif;color:#6b6255">일반 매장</span></div>
+<div style="width:1px;height:12px;background:#f0e8da"></div>
+<div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;background:#17a06a;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.08)"></span><span style="font:600 11px/1 Pretendard,sans-serif;color:#6b6255">리뷰 적립 외곽 매장</span></div>
+</div>
+
+<button style="{{ locBtn }}" onClick="{{ recenter }}">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"></circle><circle cx="12" cy="12" r="8"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg>
+</button>
+
+<div style="{{ sheetStyle }}">
+<div onClick="{{ toggleSheet }}" style="padding:10px 0 8px;display:flex;justify-content:center;cursor:pointer">
+<div style="width:44px;height:5px;border-radius:999px;background:#e7ddcb"></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 18px 12px">
+<div style="display:flex;align-items:center;gap:8px;min-width:0">
+<button onClick="{{ clearFocus }}" style="{{ backBtn }}">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<span style="font:800 16px/1 Pretendard,sans-serif;color:#3d372f;white-space:nowrap">{{ sheetTitle }}</span>
+<span style="font:500 12px/1 Pretendard,sans-serif;color:#a79c8a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ sheetSub }}</span>
+</div>
+<div style="{{ sortStyle }}">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a35d04" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M6 12h12M10 18h4"></path></svg>
+<span style="font:700 11px/1 Pretendard,sans-serif;color:#a35d04">거리순</span>
+</div>
+</div>
+<div class="noscroll" ref="{{ listRef }}" style="flex:1;overflow-y:auto;padding:0 14px 20px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ cards }}" as="s" hint-placeholder-count="6">
+<div onClick="{{ s.select }}" style="{{ s.rowStyle }}">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="{{ s.thumb }}">{{ s.rank }}</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:center;gap:6px">
+<span style="{{ s.dot }}"></span>
+<span style="font:700 15px/1.2 Pretendard,sans-serif;color:#3d372f">{{ s.name }}</span>
+<span style="{{ s.tagStyle }}">{{ s.tag }}</span>
+<span style="{{ s.crowdStyle }}"><span style="{{ s.crowdDot }}"></span>{{ s.crowd }}</span>
+</div>
+<div style="margin-top:6px;font:500 12px/1.35 Pretendard,sans-serif;color:#a79c8a">{{ s.meta }}</div>
+<div style="{{ s.statusStyle }}">{{ s.status }}</div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
+<div style="{{ s.pointStyle }}">{{ s.point }}</div>
+<div style="font:500 11px/1 Pretendard,sans-serif;color:#b7ac99">{{ s.walk }}</div>
+<button onClick="{{ s.toggleSave }}" style="{{ s.saveBtn }}" style-hover="background:#fae6c1">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="{{ s.saveFill }}" stroke="{{ s.saveStroke }}" stroke-width="2" stroke-linejoin="round"><path d="M6.5 3.8h11a1 1 0 0 1 1 1v15.4l-6.5-4-6.5 4V4.8a1 1 0 0 1 1-1z"></path></svg>
+</button>
+</div>
+</div>
+<div style="{{ s.expandStyle }}">
+<div class="noscroll" style="display:flex;gap:8px;overflow-x:auto;margin:0 -2px;padding:2px">
+<image-slot id="shot-{{ s.id }}-1" radius="14" placeholder="매장 사진 1" style="width:172px;height:118px;flex:none"></image-slot>
+<image-slot id="shot-{{ s.id }}-2" radius="14" placeholder="좌석·콘센트" style="width:126px;height:118px;flex:none"></image-slot>
+<image-slot id="shot-{{ s.id }}-3" radius="14" placeholder="메뉴" style="width:126px;height:118px;flex:none"></image-slot>
+</div>
+<div style="margin-top:11px;display:flex;background:#fdf8ef;border-radius:14px;overflow:hidden">
+<div style="flex:1;padding:11px 12px">
+<div style="font:600 10px/1 Pretendard,sans-serif;color:#a79c8a">좌석 여유</div>
+<div style="margin-top:6px;font:700 13px/1 Pretendard,sans-serif;color:#3d372f">{{ s.seat }}</div>
+</div>
+<div style="width:1px;background:#f0e8da;margin:9px 0"></div>
+<div style="flex:1;padding:11px 12px">
+<div style="font:600 10px/1 Pretendard,sans-serif;color:#a79c8a">콘센트</div>
+<div style="margin-top:6px;font:700 13px/1 Pretendard,sans-serif;color:#3d372f">{{ s.plug }}</div>
+</div>
+<div style="width:1px;background:#f0e8da;margin:9px 0"></div>
+<div style="flex:1;padding:11px 12px">
+<div style="font:600 10px/1 Pretendard,sans-serif;color:#a79c8a">마감</div>
+<div style="margin-top:6px;font:700 13px/1 Pretendard,sans-serif;color:#3d372f">{{ s.close }}</div>
+</div>
+</div>
+<div style="margin-top:10px;font:500 12px/1.55 Pretendard,sans-serif;color:#6b6255">{{ s.why }}</div>
+<div style="margin-top:12px;display:flex;gap:8px">
+<button style="flex:1;padding:12px 14px;background:#f78708;border:none;border-radius:999px;color:#fff;font:700 13px/1 Pretendard,sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(247,135,8,.3)" style-hover="background:#d97505">길찾기</button>
+<button onClick="{{ s.review }}" style="flex:1;padding:12px 14px;background:#fff;border:1.5px solid #efe6d6;border-radius:999px;color:#6b6255;font:700 13px/1 Pretendard,sans-serif;cursor:pointer" style-hover="background:#fae6c1;border-color:#fae6c1">리뷰 쓰고 적립</button>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div onClick="{{ closeMenu }}" style="{{ scrimStyle }}"></div>
+<div style="{{ drawerStyle }}">
+<div style="padding:64px 20px 20px;background:#fdf8ef">
+<div style="display:flex;align-items:center;gap:12px">
+<image-slot id="me-avatar" shape="circle" placeholder="" style="width:52px;height:52px;flex:none"></image-slot>
+<div style="min-width:0">
+<div style="font:800 16px/1.2 Pretendard,sans-serif;color:#3d372f">{{ nickname }}</div>
+<div style="margin-top:4px;font:500 11.5px/1 Pretendard,sans-serif;color:#a79c8a">{{ email }}</div>
+</div>
+</div>
+<div onClick="{{ goWallet }}" style="margin-top:16px;padding:14px 16px;border-radius:16px;background:#f78708;color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(247,135,8,.28)">
+<div style="font:600 11px/1 Pretendard,sans-serif;opacity:.9">내 적립금</div>
+<div style="margin-top:7px;display:flex;align-items:baseline;justify-content:space-between">
+<span style="font:800 24px/1 Pretendard,sans-serif">{{ pointsLabel }}</span>
+<span style="font:600 11px/1 Pretendard,sans-serif;opacity:.92">지갑 열기 →</span>
+</div>
+</div>
+</div>
+<div style="flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:2px;background:#fff">
+<sc-for list="{{ menuRows }}" as="r" hint-placeholder-count="4">
+<div onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;padding:14px 12px;border-radius:14px;cursor:pointer" style-hover="background:#fdf8ef">
+<span style="{{ r.icon }}"></span>
+<span style="flex:1;font:600 14px/1 Pretendard,sans-serif;color:#3d372f">{{ r.label }}</span>
+<span style="font:600 12px/1 Pretendard,sans-serif;color:#c0b5a1">{{ r.value }}</span>
+</div>
+</sc-for>
+<div style="margin:6px 12px 0;height:1px;background:#f2ebdf"></div>
+<div onClick="{{ logout }}" style="display:flex;align-items:center;gap:12px;padding:14px 12px;border-radius:14px;cursor:pointer" style-hover="background:#fdf8ef">
+<span style="width:8px;height:8px;border-radius:50%;background:#d9cfbd"></span>
+<span style="flex:1;font:600 14px/1 Pretendard,sans-serif;color:#a79c8a">{{ authLabel }}</span>
+</div>
+</div>
+</div>
+
+<div style="{{ reviewStyle }}">
+<div style="padding:60px 18px 14px;display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid #f2ebdf">
+<button onClick="{{ backToMap }}" style="width:36px;height:36px;border:none;border-radius:999px;background:#fdf8ef;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#fae6c1">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<span style="font:800 16px/1 Pretendard,sans-serif;color:#3d372f">리뷰 작성</span>
+</div>
+<div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px 20px">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="{{ reviewDot }}"></span>
+<span style="font:800 17px/1.2 Pretendard,sans-serif;color:#3d372f">{{ reviewName }}</span>
+</div>
+<div style="margin-top:6px;font:500 12px/1.4 Pretendard,sans-serif;color:#a79c8a">{{ reviewMeta }}</div>
+<div style="margin-top:16px;padding:16px;border-radius:20px;background:#fff;box-shadow:0 2px 12px rgba(120,90,40,.1)">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="font:800 14px/1 Pretendard,sans-serif;color:#3d372f">영수증 인증</span>
+<span style="padding:4px 8px;border-radius:999px;background:#fbe3d8;color:#c94b1e;font:700 10px/1 Pretendard,sans-serif">필수</span>
+<span style="flex:1"></span>
+<span style="{{ receiptState }}">{{ receiptStateText }}</span>
+</div>
+<div style="{{ receiptIdle }}">
+<div style="margin-top:6px;font:500 11.5px/1.5 Pretendard,sans-serif;color:#a79c8a">결제 영수증을 인식해 결제 금액의 2%를 캐시백으로 적립해 드려요. (OCR 자동 인식)</div>
+<div style="margin-top:12px;display:flex;gap:8px">
+<button onClick="{{ shootReceipt }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border:none;border-radius:16px;background:#f78708;color:#fff;font:700 13px/1 Pretendard,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(247,135,8,.26)" style-hover="background:#d97505">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.4h6.8L17 8h3v11H4z"></path><circle cx="12" cy="13" r="3.4"></circle></svg>
+바로 촬영
+</button>
+<button onClick="{{ uploadReceipt }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border:1.5px solid #f0e8da;border-radius:16px;background:#fff;color:#6b6255;font:700 13px/1 Pretendard,sans-serif;cursor:pointer" style-hover="background:#fae6c1;border-color:#fae6c1">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"></path><path d="M4 16v3h16v-3"></path></svg>
+파일 업로드
+</button>
+</div>
+</div>
+<div style="{{ receiptScan }}">
+<div style="width:34px;height:34px;flex:none;border-radius:12px;background:#fae6c1;display:flex;align-items:center;justify-content:center">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a35d04" stroke-width="2.2" stroke-linecap="round"><path d="M4 8V5h3M20 8V5h-3M4 16v3h3M20 16v3h-3M4 12h16"></path></svg>
+</div>
+<div style="flex:1">
+<div style="font:700 13px/1 Pretendard,sans-serif;color:#3d372f">영수증을 읽는 중…</div>
+<div style="margin-top:6px;font:500 11.5px/1 Pretendard,sans-serif;color:#a79c8a">{{ receiptSourceText }} · 결제 금액과 매장명을 확인하고 있어요</div>
+</div>
+</div>
+<div style="{{ receiptOk }}">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+<span style="font:600 11.5px/1 Pretendard,sans-serif;color:#a79c8a">인식된 결제 금액</span>
+<span style="font:800 17px/1 Pretendard,sans-serif;color:#3d372f">{{ receiptAmountLabel }}</span>
+</div>
+<div style="margin-top:9px;padding-top:9px;border-top:1px solid #f2ebdf;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 11.5px/1 Pretendard,sans-serif;color:#a79c8a">2% 캐시백</span>
+<span style="font:700 13px/1 Pretendard,sans-serif;color:#17a06a">{{ cashbackLabel }}</span>
+</div>
+<div style="{{ receiptNote }}">{{ receiptNoteText }}</div>
+<div style="display:none">
+</div>
+<div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 11.5px/1 Pretendard,sans-serif;color:#a79c8a">{{ bonusLabel }}</span>
+<span style="font:700 13px/1 Pretendard,sans-serif;color:#17a06a">{{ bonusAmountLabel }}</span>
+</div>
+<button onClick="{{ resetReceipt }}" style="margin-top:11px;padding:8px 12px;border:1.5px solid #f0e8da;border-radius:999px;background:#fff;font:700 11.5px/1 Pretendard,sans-serif;color:#a79c8a;cursor:pointer" style-hover="background:#fdf8ef">다시 올리기</button>
+</div>
+</div>
+</div>
+</div>
+<div style="{{ rewardBanner }}">
+<div>
+<div style="font:700 12px/1.3 Pretendard,sans-serif">{{ bannerTitle }}</div>
+<div style="margin-top:5px;font:500 11.5px/1.4 Pretendard,sans-serif;opacity:.85">{{ bannerSub }}</div>
+</div>
+<div style="font:800 20px/1 Pretendard,sans-serif;white-space:nowrap">{{ rewardAmount }}</div>
+</div>
+<div style="margin-top:20px;font:700 13px/1 Pretendard,sans-serif;color:#3d372f">별점</div>
+<div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+<sc-for list="{{ stars }}" as="st" hint-placeholder-count="5">
+<button onClick="{{ st.set }}" style="border:none;background:none;padding:0;cursor:pointer;line-height:0">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="{{ st.fill }}" stroke="{{ st.stroke }}" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3.2l2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.6l6-.9z"></path></svg>
+</button>
+</sc-for>
+<span style="margin-left:4px;font:700 13px/1 Pretendard,sans-serif;color:#c0b5a1">{{ ratingLabel }}</span>
+</div>
+<div style="margin-top:20px;font:700 13px/1 Pretendard,sans-serif;color:#3d372f">사진 첨부</div>
+<div class="noscroll" style="margin-top:10px;display:flex;gap:8px;overflow-x:auto;padding:2px">
+<image-slot id="rev-1" radius="14" placeholder="사진 추가" style="width:104px;height:104px;flex:none"></image-slot>
+<image-slot id="rev-2" radius="14" placeholder="사진 추가" style="width:104px;height:104px;flex:none"></image-slot>
+<image-slot id="rev-3" radius="14" placeholder="사진 추가" style="width:104px;height:104px;flex:none"></image-slot>
+</div>
+<div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between">
+<span style="font:700 13px/1 Pretendard,sans-serif;color:#3d372f">카공 환경 체크</span>
+<span style="font:600 11.5px/1 Pretendard,sans-serif;color:#c0b5a1">{{ catProgress }}</span>
+</div>
+<div style="margin-top:10px;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+<div style="padding:14px 15px;border-radius:18px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.08)">
+<div style="font:700 12.5px/1 Pretendard,sans-serif;color:#3d372f">{{ c.q }}</div>
+<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:7px">
+<sc-for list="{{ c.opts }}" as="o" hint-placeholder-count="3">
+<button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:22px;font:700 13px/1 Pretendard,sans-serif;color:#3d372f">한 줄 후기</div>
+<textarea value="{{ text }}" onChange="{{ onText }}" placeholder="콘센트, 좌석, 소음 같은 작업 환경을 적어주면 다른 런케이션 여행자에게 큰 도움이 됩니다." style="margin-top:10px;width:100%;box-sizing:border-box;height:118px;padding:14px;border:1.5px solid #f0e8da;border-radius:16px;background:#fdf8ef;font:500 13px/1.6 Pretendard,sans-serif;color:#3d372f;resize:none;outline:none"></textarea>
+<div class="noscroll" style="margin-top:10px;display:flex;gap:7px;overflow-x:auto;padding-bottom:2px">
+<sc-for list="{{ quickTags }}" as="q" hint-placeholder-count="5">
+<button onClick="{{ q.add }}" style="{{ q.style }}" style-hover="background:#fae6c1">{{ q.label }}</button>
+</sc-for>
+</div>
+<button onClick="{{ submit }}" style="{{ submitStyle }}">{{ submitLabel }}</button>
+<div style="{{ submitNote }}">{{ submitError }}</div>
+<div style="{{ noticeStyle }}">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="{{ noticeColor }}" stroke-width="2.2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.6v5.2M12 16.4h.01"></path></svg>
+<span>{{ noticeText }}</span>
+</div>
+</div>
+</div>
+
+<div style="{{ walletStyle }}">
+<div style="padding:60px 18px 14px;display:flex;align-items:center;gap:10px;background:#fff">
+<button onClick="{{ backToMap }}" style="width:36px;height:36px;border:none;border-radius:999px;background:#fdf8ef;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#fae6c1">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<span style="font:800 16px/1 Pretendard,sans-serif;color:#3d372f">내 적립금</span>
+</div>
+<div class="noscroll" style="flex:1;overflow-y:auto;padding:6px 18px 24px">
+<div style="padding:20px;border-radius:22px;background:#f78708;color:#fff;box-shadow:0 10px 24px rgba(247,135,8,.26)">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+<span style="font:600 12px/1 Pretendard,sans-serif;opacity:.92">사용 가능한 적립금</span>
+<span style="padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.22);font:700 10.5px/1 Pretendard,sans-serif">결제액 2% 캐시백</span>
+</div>
+<div style="margin-top:10px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+<span style="font:800 38px/1 Pretendard,sans-serif">{{ pointsLabel }}</span>
+<button onClick="{{ openWithdraw }}" style="padding:12px 16px;border:none;border-radius:999px;background:#fff;color:#f78708;font:800 13px/1 Pretendard,sans-serif;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(120,60,0,.18)" style-hover="background:#fae6c1">탐나는전 출금</button>
+</div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.3);display:flex;gap:22px">
+<div><div style="font:600 11px/1 Pretendard,sans-serif;opacity:.85">이번 달 적립</div><div style="margin-top:6px;font:800 15px/1 Pretendard,sans-serif">{{ monthLabel }}</div></div>
+<div><div style="font:600 11px/1 Pretendard,sans-serif;opacity:.85">작성 리뷰</div><div style="margin-top:6px;font:800 15px/1 Pretendard,sans-serif">{{ reviewCount }}개</div></div>
+<div><div style="font:600 11px/1 Pretendard,sans-serif;opacity:.85">등급</div><div style="margin-top:6px;font:800 15px/1 Pretendard,sans-serif">외곽 탐험가</div></div>
+</div>
+</div>
+<div style="margin-top:16px;padding:14px 16px;border-radius:16px;background:#e6f4ec;display:flex;align-items:center;gap:11px">
+<span style="width:9px;height:9px;border-radius:50%;background:#17a06a;flex:none"></span>
+<span style="font:600 12px/1.5 Pretendard,sans-serif;color:#0f7a50">모든 결제는 2% 자동 캐시백 · 외곽 매장 리뷰 2건 더 쓰면 1,000P 보너스</span>
+</div>
+<div style="margin-top:20px;display:flex;gap:8px">
+<button onClick="{{ tabLedger }}" style="{{ tabLedgerStyle }}">적립 내역</button>
+<button onClick="{{ tabReviews }}" style="{{ tabReviewsStyle }}">내 리뷰</button>
+</div>
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ ledger }}" as="h" hint-placeholder-count="5">
+<div style="padding:14px 16px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.09);display:flex;align-items:center;gap:12px">
+<span style="{{ h.icon }}">{{ h.iconText }}</span>
+<div style="flex:1;min-width:0">
+<div style="font:700 14px/1.2 Pretendard,sans-serif;color:#3d372f">{{ h.title }}</div>
+<div style="margin-top:5px;font:500 11.5px/1 Pretendard,sans-serif;color:#a79c8a">{{ h.sub }}</div>
+</div>
+<span style="{{ h.amountStyle }}">{{ h.amount }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<div style="{{ accountStyle }}">
+<div style="padding:60px 18px 14px;display:flex;align-items:center;gap:10px;background:#fff">
+<button onClick="{{ backToMap }}" style="width:36px;height:36px;border:none;border-radius:999px;background:#fdf8ef;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#fae6c1">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<span style="font:800 16px/1 Pretendard,sans-serif;color:#3d372f">계정 설정</span>
+</div>
+<div class="noscroll" style="flex:1;overflow-y:auto;padding:10px 18px 24px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 0 22px">
+<image-slot id="account-avatar" shape="circle" placeholder="" style="width:110px;height:110px"></image-slot>
+<button style="padding:9px 16px;border:1.5px solid #f0e8da;border-radius:999px;background:#fff;font:700 12px/1 Pretendard,sans-serif;color:#6b6255;cursor:pointer" style-hover="background:#fae6c1;border-color:#fae6c1">사진 변경</button>
+</div>
+<div style="border-radius:18px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.09);overflow:hidden">
+<sc-for list="{{ accountRows }}" as="a" hint-placeholder-count="4">
+<div style="padding:15px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f5efe4">
+<span style="width:74px;flex:none;font:600 12px/1 Pretendard,sans-serif;color:#a79c8a">{{ a.label }}</span>
+<span style="flex:1;font:600 14px/1.3 Pretendard,sans-serif;color:#3d372f">{{ a.value }}</span>
+<span style="font:600 12px/1 Pretendard,sans-serif;color:#f78708">{{ a.action }}</span>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:16px;padding:15px 16px;border-radius:18px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.09);display:flex;align-items:center;gap:12px">
+<div style="flex:1">
+<div style="font:700 13.5px/1 Pretendard,sans-serif;color:#3d372f">외곽 매장 추천 알림</div>
+<div style="margin-top:6px;font:500 11.5px/1.4 Pretendard,sans-serif;color:#a79c8a">근처에 적립금 높은 매장이 생기면 알려드려요</div>
+</div>
+<div onClick="{{ toggleAlarm }}" style="{{ alarmTrack }}"><div style="{{ alarmKnob }}"></div></div>
+</div>
+<button onClick="{{ logout }}" style="margin-top:18px;width:100%;padding:15px;border:1.5px solid #f0e8da;border-radius:999px;background:#fff;font:700 13.5px/1 Pretendard,sans-serif;color:#a79c8a;cursor:pointer" style-hover="background:#fdf8ef">{{ authLabel }}</button>
+</div>
+</div>
+
+<div style="{{ savedStyle }}">
+<div style="padding:60px 18px 14px;display:flex;align-items:center;gap:10px;background:#fff">
+<button onClick="{{ backToMap }}" style="width:36px;height:36px;border:none;border-radius:999px;background:#fdf8ef;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#fae6c1">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b6255" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<span style="font:800 16px/1 Pretendard,sans-serif;color:#3d372f">저장한 매장</span>
+<span style="font:600 12px/1 Pretendard,sans-serif;color:#c0b5a1">{{ savedCount }}곳</span>
+</div>
+<div class="noscroll" style="flex:1;overflow-y:auto;padding:8px 18px 24px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ saved }}" as="v" hint-placeholder-count="5">
+<div onClick="{{ v.open }}" style="padding:15px 16px;border-radius:18px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.09);cursor:pointer" style-hover="background:#fffaf1">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="{{ v.dot }}"></span>
+<span style="font:700 15px/1.2 Pretendard,sans-serif;color:#3d372f">{{ v.name }}</span>
+<span style="{{ v.crowdStyle }}"><span style="{{ v.crowdDot }}"></span>{{ v.crowd }}</span>
+<span style="flex:1"></span>
+<span style="{{ v.pointStyle }}">{{ v.point }}</span>
+</div>
+<div style="margin-top:7px;font:500 12px/1.35 Pretendard,sans-serif;color:#a79c8a">{{ v.meta }}</div>
+<div style="margin-top:9px;display:flex;align-items:center;gap:8px">
+<span style="{{ v.statusStyle }}">{{ v.status }}</span>
+<span style="font:500 11.5px/1 Pretendard,sans-serif;color:#c0b5a1">저장 {{ v.savedAt }}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div onClick="{{ closeWithdraw }}" style="{{ wdScrim }}"></div>
+<div style="{{ wdSheet }}">
+<div style="display:flex;justify-content:center;padding-top:6px"><div style="width:44px;height:5px;border-radius:999px;background:#e7ddcb"></div></div>
+<div style="padding:20px 22px 24px">
+<div style="font:800 18px/1.3 Pretendard,sans-serif;color:#3d372f">탐나는전으로 출금</div>
+<div style="margin-top:7px;font:500 12.5px/1.55 Pretendard,sans-serif;color:#a79c8a">1,000P부터 1P = 1원으로 제주 지역화폐 탐나는전에 충전됩니다. 도내 가맹점에서 바로 사용 가능해요.</div>
+<div style="margin-top:16px;display:flex;gap:8px">
+<sc-for list="{{ wdOptions }}" as="w" hint-placeholder-count="3">
+<button onClick="{{ w.pick }}" style="{{ w.style }}">{{ w.label }}</button>
+</sc-for>
+</div>
+<div style="margin-top:16px;padding:16px;border-radius:18px;background:#fdf8ef">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 12.5px/1 Pretendard,sans-serif;color:#a79c8a">출금 금액</span>
+<span style="font:800 20px/1 Pretendard,sans-serif;color:#3d372f">{{ wdAmountLabel }}</span>
+</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0e8da;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 12.5px/1 Pretendard,sans-serif;color:#a79c8a">출금 후 잔액</span>
+<span style="font:700 14px/1 Pretendard,sans-serif;color:#6b6255">{{ wdRestLabel }}</span>
+</div>
+</div>
+<button onClick="{{ doWithdraw }}" style="{{ wdBtn }}">{{ wdBtnLabel }}</button>
+</div>
+</div>
+
+<div style="{{ loginStyle }}">
+<div style="position:absolute;inset:0;overflow:hidden">
+<div style="position:absolute;left:-90px;top:-70px;width:300px;height:300px;border-radius:50%;background:#fae6c1;opacity:.75"></div>
+<div style="position:absolute;right:-110px;top:120px;width:280px;height:280px;border-radius:50%;background:#fbe8cd;opacity:.6"></div>
+<div style="position:absolute;left:40px;bottom:210px;width:220px;height:220px;border-radius:50%;background:#f7ecd8;opacity:.7"></div>
+</div>
+<div style="position:relative;flex:1;display:flex;flex-direction:column;padding:0 26px">
+<div style="margin-top:150px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;border-radius:16px;background:#f78708;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(247,135,8,.32)">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
+</div>
+<span style="font:800 30px/1 Pretendard,sans-serif;color:#3d372f;letter-spacing:-.02em">이디저디</span>
+</div>
+<div style="margin-top:18px;font:700 19px/1.45 Pretendard,sans-serif;color:#3d372f;text-wrap:pretty">제주 어디서든<br>여유롭게 일할 곳을 찾아요</div>
+<div style="margin-top:10px;font:500 13px/1.7 Pretendard,sans-serif;color:#a79c8a;text-wrap:pretty">붐비는 핫플 대신 조용한 외곽 매장으로.<br>리뷰를 남기면 적립금이 쌓이고, 탐나는전으로 출금할 수 있어요.</div>
+<div style="margin-top:22px;display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ loginPoints }}" as="p" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:9px">
+<span style="width:7px;height:7px;border-radius:50%;background:#f78708;flex:none"></span>
+<span style="font:600 15px/1.45 Pretendard,sans-serif;color:#6b6255">{{ p.text }}</span>
+</div>
+</sc-for>
+</div>
+<div style="flex:1"></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding-bottom:16px">
+<button onClick="{{ loginKakao }}" style="{{ kakaoBtn }}">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="#3d1d1d"><path d="M12 3.6c-4.7 0-8.5 2.9-8.5 6.6 0 2.4 1.6 4.5 4 5.7l-1 3.6c-.1.3.2.5.5.4l4.3-2.8c.2 0 .5.1.7.1 4.7 0 8.5-3 8.5-6.9S16.7 3.6 12 3.6z"></path></svg>
+<span style="flex:1;text-align:center">{{ kakaoLabel }}</span>
+<span style="width:19px"></span>
+</button>
+<button onClick="{{ loginGoogle }}" style="{{ googleBtn }}">
+<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.3-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4z"></path><path fill="#34A853" d="M12 22c2.7 0 4.9-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.7-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"></path><path fill="#FBBC05" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2L6.4 14z"></path><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.4L6.4 10c.8-2.4 3-4.1 5.6-4.1z"></path></svg>
+<span style="flex:1;text-align:center">{{ googleLabel }}</span>
+<span style="width:18px"></span>
+</button>
+<div style="margin-top:8px;font:500 11px/1.6 Pretendard,sans-serif;color:#c0b5a1;text-align:center;text-wrap:pretty">소셜 로그인만 지원합니다 · 계속하면 이용약관과<br>개인정보 처리방침에 동의하게 됩니다</div>
+</div>
+</div>
+</div>
+
+<div style="{{ doneScrim }}"></div>
+<div style="{{ doneSheet }}">
+<div style="display:flex;justify-content:center;padding-top:6px"><div style="width:44px;height:5px;border-radius:999px;background:#e7ddcb"></div></div>
+<div style="padding:26px 22px 24px;text-align:center">
+<div style="margin:0 auto;width:76px;height:76px;border-radius:50%;background:#e6f4ec;display:flex;align-items:center;justify-content:center;animation:pop .45s cubic-bezier(.2,.9,.3,1.2)">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#17a06a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"></path></svg>
+</div>
+<div style="margin-top:16px;font:800 20px/1.3 Pretendard,sans-serif;color:#3d372f">리뷰 등록 완료!</div>
+<div style="margin-top:8px;font:500 13px/1.6 Pretendard,sans-serif;color:#a79c8a">{{ doneLine }}</div>
+<div style="margin-top:18px;padding:16px;border-radius:18px;background:#fdf8ef;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 12.5px/1 Pretendard,sans-serif;color:#a79c8a">적립된 포인트</span>
+<span style="font:800 24px/1 Pretendard,sans-serif;color:#17a06a">{{ doneAmount }}</span>
+</div>
+<div style="margin-top:10px;padding:16px;border-radius:18px;background:#fdf8ef;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 12.5px/1 Pretendard,sans-serif;color:#a79c8a">총 적립금</span>
+<span style="font:800 18px/1 Pretendard,sans-serif;color:#3d372f">{{ pointsLabel }}</span>
+</div>
+<div style="margin-top:18px;display:flex;gap:9px">
+<button onClick="{{ closeDone }}" style="flex:1;padding:15px;border:1.5px solid #f0e8da;border-radius:999px;background:#fff;font:700 13.5px/1 Pretendard,sans-serif;color:#6b6255;cursor:pointer" style-hover="background:#fdf8ef">지도로</button>
+<button onClick="{{ goWallet }}" style="flex:1.3;padding:15px;border:none;border-radius:999px;background:#f78708;color:#fff;font:700 13.5px/1 Pretendard,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(247,135,8,.3)" style-hover="background:#d97505">지갑에서 확인</button>
+</div>
+</div>
+</div>
+
+</div>
+</x-import>
+</div>
+
+<div style="width:300px;display:flex;flex-direction:column;gap:20px">
+<div style="background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 4px 16px rgba(120,90,40,.08)">
+<div style="font:800 13px/1.3 Pretendard,sans-serif;color:#3d372f">흐름</div>
+<p style="margin:9px 0 0;font:500 12.5px/1.65 Pretendard,sans-serif;color:#6b6255;text-wrap:pretty">카드 탭 → 사진 3장 + 체류 근거 → "리뷰 쓰고 적립" → 별점·사진·후기 작성 → 적립 완료 시트 → 지갑. 왼쪽 상단 메뉴에서 적립금·리뷰 현황·계정 설정·로그아웃으로 바로 갈 수 있습니다.</p>
+</div>
+<div style="background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 4px 16px rgba(120,90,40,.08)">
+<div style="font:800 13px/1.3 Pretendard,sans-serif;color:#3d372f">이미지 넣는 법</div>
+<p style="margin:9px 0 0;font:500 12.5px/1.65 Pretendard,sans-serif;color:#6b6255;text-wrap:pretty">사진 자리는 비어 있는 슬롯으로 넣어뒀습니다. 준비한 샘플 3장을 카드 안 슬롯에 그대로 끌어다 놓으면 채워지고 새로고침해도 유지됩니다. 채팅에 올려주시면 제가 넣어드릴 수도 있어요.</p>
+</div>
+<div style="background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 4px 16px rgba(120,90,40,.08)">
+<div style="font:800 13px/1.3 Pretendard,sans-serif;color:#3d372f">다음 단계 제안</div>
+<p style="margin:9px 0 0;font:500 12.5px/1.65 Pretendard,sans-serif;color:#6b6255;text-wrap:pretty">적립금 사용(결제) 화면, 매장 상세 풀스크린, 요일·시간대 혼잡도 그래프 — 필요한 것부터 이어 그리겠습니다.</p>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:840,&quot;height&quot;:1010}}">
+const ORANGE = '#f78708', BEIGE = '#fae6c1', BLUE = '#2f6df6', GREEN = '#17a06a', WARN = '#e2622f', INK = '#3d372f';
+
+const DEMO_STORES = [
+  { id: 's1', name: '카페 한담', x: 148, y: 268, reward: 0, tag: '카공 성지', meta: '애월읍 한담해변 · 4.8 (312) · 아메리카노 5,000', status: '여유롭게 2시간', urgent: false, walk: '도보 4분', seat: '12석 여유', plug: '좌석당 1구', close: '22:00', why: '지금 좌석 점유율 40%, 마감까지 4시간 — 이동 시간을 더해도 2시간 작업이 여유롭습니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','지금 영업중','조용한 곳'] },
+  { id: 's2', name: '소길리 창고', x: 74, y: 452, reward: 800, tag: '외곽', meta: '애월읍 소길리 · 리뷰 12개 · 도심에서 6.4km', status: '여유롭게 4시간', urgent: false, walk: '차 12분', seat: '20석 여유', plug: '전 좌석', close: '23:00', why: '리뷰가 12개뿐인 외곽 매장이라 방문 후 리뷰를 남기면 800P가 추가 적립됩니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','리뷰 적립','지금 영업중','조용한 곳','주차'] },
+  { id: 's3', name: '브루하우스 애월', x: 268, y: 232, reward: 0, tag: '', meta: '애월해안로 · 4.4 (521) · 아메리카노 5,500', status: '마감까지 1시간 20분', urgent: true, walk: '도보 7분', seat: '3석 여유', plug: '창가만', close: '19:30', why: '마감 1시간 20분 전이라 "여유롭게 2시간" 조건에 미달합니다. 짧게 머무를 때만 추천.', filters: ['지금 영업중','콘센트'] },
+  { id: 's4', name: '저지리 로스터리', x: 322, y: 478, reward: 1200, tag: '외곽', meta: '한림읍 저지리 · 리뷰 6개 · 도심에서 11km', status: '여유롭게 5시간', urgent: false, walk: '차 21분', seat: '28석 여유', plug: '전 좌석', close: '24:00', why: '리뷰 6개, 가장 한산한 시간대 — 오늘 최대 1,200P 적립 대상 매장입니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','리뷰 적립','지금 영업중','조용한 곳','주차'] },
+  { id: 's5', name: '데일리 빈 한림', x: 198, y: 430, reward: 0, tag: '', meta: '한림읍 · 4.2 (204) · 아메리카노 4,300', status: '마감까지 45분', urgent: true, walk: '도보 3분', seat: '8석 여유', plug: '없음', close: '18:45', why: '콘센트가 없고 마감이 45분 남아 장시간 작업에는 맞지 않습니다.', filters: ['지금 영업중','주차'] },
+  { id: 's6', name: '노트 커피바', x: 300, y: 348, reward: 0, tag: '', meta: '곽지과물해변 앞 · 4.5 (410) · 아메리카노 5,000', status: '여유롭게 3시간', urgent: false, walk: '도보 6분', seat: '6석 여유', plug: '좌석당 2구', close: '21:00', why: '좌석은 다소 붐비지만 콘센트가 넉넉하고 마감까지 3시간 남았습니다.', filters: ['여유롭게 2시간','카공 가능','콘센트','지금 영업중'] },
+];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   백엔드 연동 계층
+   위 DEMO_STORES 는 폴백이다. 서버가 살아있으면 실데이터로 통째로 교체된다.
+   발표 중 서버가 죽어도 화면은 그대로 돌아가야 하므로 폴백을 지우지 않는다.
+   ══════════════════════════════════════════════════════════════════════════ */
+let STORES = DEMO_STORES;
+let SAVED_LIVE = null;
+
+/* 백엔드 주소 결정 규칙
+     1) ?api=... 쿼리가 있으면 그걸 쓴다 (다른 PC의 서버를 볼 때)
+     2) file:// 로 파일을 직접 열었으면 로컬 서버를 찾는다
+     3) 그 외에는 항상 '같은 출처' — 이 페이지를 내려준 서버가 곧 백엔드다
+
+   3번이 중요하다. 예전엔 'port가 8000이면 같은 출처'로 판단했는데,
+   배포하면 포트가 443(https)이라 조건이 안 맞아서 방문자 본인 PC의
+   127.0.0.1:8000 을 부르게 된다 — 남의 컴퓨터에선 당연히 아무것도 없다. */
+const API = new URLSearchParams(location.search).get('api')
+  || (location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '');
+
+let SB = null;              // Supabase 클라이언트
+let AUTH_REQUIRED = true;
+
+async function getToken() {
+  if (!SB) return null;
+  const { data } = await SB.auth.getSession();
+  return data.session ? data.session.access_token : null;   // 매번 새로 꺼낸다
+}
+
+async function call(path, opts) {
+  opts = opts || {};
+  const tk = await getToken();
+  const headers = Object.assign(
+    { 'Content-Type': 'application/json' },
+    tk ? { Authorization: 'Bearer ' + tk } : {},
+    opts.headers || {}
+  );
+  const res = await fetch(API + path, Object.assign({}, opts, { headers }));
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.detail || (res.status + ' ' + res.statusText));
+  return body;
+}
+
+/* 목업 지도는 실제 지도가 아니라 402×874 SVG에 핀을 픽셀로 찍는다.
+   그래서 위경도를 그 캔버스 위로 투영한다. 제주 전체가 들어가도록 잡은 값. */
+const GEO = { latN: 33.60, latS: 33.10, lngW: 126.14, lngE: 126.99 };
+const PIN = { x0: 42, x1: 360, y0: 214, y1: 596 };
+
+function project(lat, lng) {
+  const cl = v => Math.min(1, Math.max(0, v));
+  return {
+    x: Math.round(PIN.x0 + cl((lng - GEO.lngW) / (GEO.lngE - GEO.lngW)) * (PIN.x1 - PIN.x0)),
+    y: Math.round(PIN.y0 + cl((GEO.latN - lat) / (GEO.latN - GEO.latS)) * (PIN.y1 - PIN.y0)),
+  };
+}
+
+/* 혼잡도는 공공데이터에 없다. 핫스팟과의 거리로 '추정'만 한다.
+   실측인 척하지 않으려고 UI에도 '추정'으로 표기한다. */
+function crowdOf(s) {
+  if (s.crowd && CROWD[s.crowd]) return s.crowd;
+  if (s.distHot == null) return CROWD_OF[s.id] || 'mid';
+  return s.distHot >= 5 ? 'low' : s.distHot <= 1.5 ? 'high' : 'mid';
+}
+
+/* ══ 카카오맵 ═════════════════════════════════════════════════════════════
+   지도는 '배경 그림'이 아니라 실제 지도여야 한다. 확대·이동이 되고 핀이 같이
+   따라붙어야 지도로서 의미가 있다. 그래서 카카오맵이 화면을 소유하고, 핀 위치는
+   지도가 움직일 때마다 위경도 → 화면픽셀로 다시 계산한다.
+
+   목업의 핀 디자인(적립금 뱃지·말풍선)은 그대로 쓴다. 카카오 기본 마커로 바꾸면
+   '리뷰 +3,700P' 뱃지를 잃어버리는데, 그게 이 서비스의 핵심 화면이다. */
+const JEJU_CENTER = { lat: 33.376, lng: 126.541 };
+
+function loadKakaoSdk(key) {
+  return new Promise((resolve, reject) => {
+    if (!key) return reject(new Error('KAKAO_JS_KEY 미설정'));
+    if (window.kakao && window.kakao.maps && window.kakao.maps.Map) return resolve();
+
+    // onload/onerror 가 둘 다 안 오는 경우가 있다(네트워크 차단·프록시).
+    // 타임아웃이 없으면 promise 가 영원히 멈춰서 실패 안내조차 못 띄운다.
+    const timer = setTimeout(
+      () => reject(new Error('카카오맵 응답 없음 (네트워크 확인)')), 8000);
+    const done = (fn) => (...a) => { clearTimeout(timer); fn(...a); };
+
+    const s = document.createElement('script');
+    // autoload=false → 스크립트만 받고 kakao.maps.load() 로 우리가 초기화 시점을 잡는다
+    s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=' + key;
+    s.onload = () => {
+      if (!window.kakao || !window.kakao.maps) {
+        return done(reject)(new Error('SDK 로드됐으나 초기화 실패 (키 확인)'));
+      }
+      window.kakao.maps.load(() => done(resolve)());
+    };
+    s.onerror = done(reject).bind(null, new Error('SDK 로드 실패 (도메인 등록 확인)'));
+    document.head.appendChild(s);
+  });
+}
+
+/* 핀이 겹치지 않게 격자 한 칸당 한 곳만 남긴다.
+   가까운 순으로 자르면 도심에만 몰리고, 무작위로 뽑으면 매번 화면이 달라진다.
+   격자 방식은 결과가 항상 같으면서 섬 전체에 고르게 퍼진다. */
+function spread(list, max) {
+  const CELL = 46;                       // 픽셀. 카드 크기 고려한 최소 간격
+  const taken = new Set();
+  const out = [];
+  for (const s of list) {
+    const key = Math.round(s.x / CELL) + ':' + Math.round(s.y / CELL);
+    if (taken.has(key)) continue;
+    taken.add(key);
+    out.push(s);
+    if (out.length >= max) break;
+  }
+  return out.length >= 6 ? out : list.slice(0, max);   // 너무 적으면 그냥 앞에서 자른다
+}
+
+/* 백엔드 카페 1건 → 목업이 기대하는 STORE 모양 */
+function toStore(c) {
+  const st = c.stay || {};
+  const p = project(c.lat, c.lng);
+  const f = [];
+  if (st.stay_ok)          f.push('여유롭게 2시간');
+  if (c.cagong_ok)         f.push('카공 가능');
+  if (c.is_remote)         f.push('리뷰 적립');
+  if (c.has_power)         f.push('콘센트');
+  if (st.open_now)         f.push('지금 영업중');
+  if (c.quiet)             f.push('조용한 곳');
+  if (c.parking)           f.push('주차');
+
+  let why;
+  if (st.break_time && st.sit_from) {
+    why = '브레이크 타임 ' + st.break_time + ' 이라 ' + st.sit_from + '부터 앉을 수 있습니다.';
+  } else if (st.reason === 'break_time') {
+    why = '브레이크 타임 ' + st.break_time + ' 에 걸려 2시간을 연속으로 있기 어렵습니다.';
+  } else if (c.reward.is_boosted) {
+    const 이유 = c.is_remote
+      ? '도심에서 ' + c.dist_to_hotspot_km + 'km 떨어진 외곽 매장'
+      : '리뷰가 ' + c.review_count + '개뿐인 저노출 매장';
+    why = 이유 + '이라, 다녀와서 리뷰를 남기면 '
+        + c.reward.point.toLocaleString() + 'P가 적립됩니다.';
+  } else {
+    why = st.label || (c.open_time + '~' + c.close_time + ' 영업');
+  }
+  if (c.cagong_source === 'estimated') {
+    why += ' (콘센트·와이파이는 아직 제보 전이라 미확인입니다)';
+  }
+
+  return {
+    id: 'c' + c.id,
+    cafeId: c.id,
+    name: c.name,
+    lat: c.lat, lng: c.lng,      // 카카오맵 투영에 쓴다
+    x: p.x, y: p.y,              // 지도 로딩 전/실패 시 쓰는 폴백 좌표
+    distHot: c.dist_to_hotspot_km,
+    reward: c.reward.is_boosted ? c.reward.point : 0,
+    tag: c.is_remote ? '외곽' : (c.cagong_ok ? '카공 성지' : ''),
+    meta: [c.district, '리뷰 ' + c.review_count + '개',
+           '도심에서 ' + c.dist_to_hotspot_km + 'km'].filter(Boolean).join(' · '),
+    status: st.label || (c.open_time + '~' + c.close_time),
+    urgent: !st.stay_ok,
+    walk: c.travel_min != null
+      ? '차 ' + c.travel_min + '분' + (c.travel_source === 'kakao' ? ' (실측)' : '')
+      : '-',
+    seat: c.seat_count ? c.seat_count + '석' : '좌석 미확인',
+    plug: c.has_power ? '콘센트 있음' : '미확인',
+    close: c.close_time,
+    why: why,
+    filters: f,
+  };
+}
+
+
+const CHIPS = ['여유롭게 2시간','카공 가능','리뷰 적립','콘센트','지금 영업중','조용한 곳','주차'];
+const CROWD_OF = { s1: 'high', s2: 'low', s3: 'mid', s4: 'low', s5: 'mid', s6: 'mid' };
+const CROWD = { low: { label: '여유', color: '#17a06a', bg: '#e6f4ec' }, mid: { label: '보통', color: '#a35d04', bg: '#fae6c1' }, high: { label: '붐빔', color: '#c94b1e', bg: '#fbe3d8' } };
+const CATS = [
+  { id: 'plug', q: '좌석별 콘센트는 몇 구인가요?', opts: ['없음','일부 좌석','좌석당 1구','좌석당 2구 이상'] },
+  { id: 'noise', q: '소음은 어떤가요?', opts: ['아주 조용','적당','조금 시끄러움','시끄러움'] },
+  { id: 'wifi', q: '와이파이가 있나요?', opts: ['없음','있음','빠름'] },
+  { id: 'toilet', q: '화장실은 어떤가요?', opts: ['매장 전용','건물 공용'] },
+  { id: 'sofa', q: '소파 좌석이 있나요?', opts: ['없음','일부 있음','많음'] },
+];
+const SAVED = [
+  { id: 'v1', name: '소길리 창고', reward: 800, crowd: 'low', meta: '애월읍 소길리 · 리뷰 12개 · 6.4km', status: '여유롭게 4시간', urgent: false, savedAt: '8월 10일' },
+  { id: 'v2', name: '저지리 로스터리', reward: 1200, crowd: 'low', meta: '한림읍 저지리 · 리뷰 6개 · 11km', status: '여유롭게 5시간', urgent: false, savedAt: '8월 9일' },
+  { id: 'v3', name: '카페 한담', reward: 0, crowd: 'high', meta: '애월읍 한담해변 · 4.8 (312)', status: '여유롭게 2시간', urgent: false, savedAt: '8월 7일' },
+  { id: 'v4', name: '금악리 책방카페', reward: 700, crowd: 'low', meta: '한림읍 금악리 · 리뷰 9개 · 9.2km', status: '여유롭게 4시간', urgent: false, savedAt: '8월 5일' },
+  { id: 'v5', name: '노트 커피바', reward: 0, crowd: 'mid', meta: '곽지과물해변 앞 · 4.5 (410)', status: '여유롭게 3시간', urgent: false, savedAt: '8월 3일' },
+  { id: 'v6', name: '하도리 창고카페', reward: 1000, crowd: 'low', meta: '구좌읍 하도리 · 리뷰 8개 · 24km', status: '여유롭게 5시간', urgent: false, savedAt: '7월 30일' },
+  { id: 'v7', name: '데일리 빈 한림', reward: 0, crowd: 'mid', meta: '한림읍 · 4.2 (204)', status: '마감까지 45분', urgent: true, savedAt: '7월 28일' },
+];
+const QUICK = ['콘센트 넉넉','조용해요','바다뷰','주차 편함','오래 있기 좋아요'];
+const RATINGS = ['', '아쉬워요', '보통이에요', '괜찮아요', '좋아요', '최고예요'];
+const BASE_LEDGER = [
+  { id: 'h1', title: '금악리 책방카페 리뷰', sub: '8월 9일 · 외곽 보너스 포함', amount: 900, kind: 'reward' },
+  { id: 'h2', title: '카페 한담 리뷰', sub: '8월 6일 · 일반 매장', amount: 100, kind: 'plain' },
+  { id: 'h3', title: '결제 캐시백 2%', sub: '8월 5일 · 카페 한담 12,000원 결제', amount: 240, kind: 'plain' },
+  { id: 'h3b', title: '탐나는전 출금', sub: '8월 3일 · 제주 지역화폐 충전', amount: -3000, kind: 'spend' },
+  { id: 'h4', title: '하도리 창고카페 리뷰', sub: '7월 30일 · 외곽 보너스 포함', amount: 1200, kind: 'reward' },
+];
+
+class Component extends DCLogic {
+  state = {
+    active: [], selected: 's1', expanded: null, sheet: 'peek',
+    savedIds: ['s1','s2','s4','s6'], focus: null, screen: 'map', menu: false, done: false, walletTab: 'ledger', alarm: true, loggedIn: false, provider: '', signing: '',
+    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', points: 12400, month: 2200, reviewCount: 12,
+    ledger: BASE_LEDGER, lastEarned: 0, withdraw: false, wdAmount: 10000,
+  };
+  listRef = React.createRef();
+
+  /* ══ 백엔드에서 실제 매장을 받아온다 ═══════════════════════════════
+     실패하면 아무것도 하지 않는다 → DEMO_STORES 가 그대로 남아 화면은 살아있다. */
+  componentDidMount() {
+    fetch(API + '/api/auth/config')
+      .then(r => r.json())
+      .then(cfg => {
+        AUTH_REQUIRED = cfg.auth_required;
+        if (cfg.supabase_url && cfg.supabase_anon_key && window.supabase) {
+          SB = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
+          SB.auth.onAuthStateChange((_e, sess) => { if (sess) this.syncMe(); });
+        }
+        // 지도 키도 백엔드가 내려준다 → HTML 에 키를 박아둘 필요가 없다
+        this.initMap(cfg.kakao_js_key);
+        return getToken();
+      })
+      .then(tk => { if (tk || !AUTH_REQUIRED) this.syncMe(); })
+      .catch(() => {});
+
+    this.loadStores();
+  }
+
+  /* 지도를 띄운다. 실패해도 예외를 삼킨다 — 손그림 폴백이 남아있다. */
+  initMap(key) {
+    return loadKakaoSdk(key).then(() => {
+      // 템플릿 렌더가 아직 안 끝났을 수 있다. 몇 번 더 찾아본다.
+      return new Promise((resolve, reject) => {
+        let tries = 0;
+        const find = () => {
+          const el = document.getElementById('kakao-map');
+          if (el) return resolve(el);
+          if (++tries > 20) return reject(new Error('지도 컨테이너를 찾지 못함'));
+          setTimeout(find, 100);
+        };
+        find();
+      });
+    }).then(el => {
+
+      const kakao = window.kakao;
+      this._map = new kakao.maps.Map(el, {
+        center: new kakao.maps.LatLng(JEJU_CENTER.lat, JEJU_CENTER.lng),
+        level: 11,                       // 제주 전체가 한 화면에 들어오는 배율
+      });
+
+      // 드래그 중에는 이벤트가 초당 수십 번 온다. 그때마다 setState 하면 버벅인다.
+      // 프레임당 한 번으로 묶는다.
+      let queued = false;
+      const sync = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; this.syncPins(); });
+      };
+      ['center_changed', 'zoom_changed', 'bounds_changed', 'idle']
+        .forEach(ev => kakao.maps.event.addListener(this._map, ev, sync));
+
+      this.setState({ mapReady: true });
+      this.fitToStores();
+    }).catch(err => {
+      console.warn('[카카오맵 미사용]', err.message, '— 손그림 지도로 표시합니다');
+      this.setState({ mapReady: false, mapError: err.message });
+    });
+  }
+
+  /* 위경도 → 화면 픽셀. 지도가 움직일 때마다 핀 좌표를 다시 찍는다. */
+  syncPins() {
+    const kakao = window.kakao;
+    if (!this._map || !kakao) return;
+
+    const proj = this._map.getProjection();
+    for (const s of STORES) {
+      if (s.lat == null) continue;
+      const pt = proj.containerPointFromCoords(new kakao.maps.LatLng(s.lat, s.lng));
+      s.x = Math.round(pt.x);
+      s.y = Math.round(pt.y);
+    }
+    // 내 위치(제주시청)도 같이 따라와야 한다. 고정 픽셀로 두면 지도만 움직여서 어색하다.
+    const me = proj.containerPointFromCoords(
+      new kakao.maps.LatLng(33.4996, 126.5312));
+    this._me = { x: Math.round(me.x), y: Math.round(me.y) };
+
+    this.setState({ mapTick: (this.state.mapTick || 0) + 1 });
+  }
+
+  /* 받아온 매장이 전부 보이도록 지도 범위를 맞춘다. */
+  fitToStores() {
+    const kakao = window.kakao;
+    if (!this._map || !kakao || !STORES.length || STORES[0].lat == null) return;
+
+    const b = new kakao.maps.LatLngBounds();
+    STORES.forEach(s => b.extend(new kakao.maps.LatLng(s.lat, s.lng)));
+    this._map.setBounds(b, 60, 40, 220, 40);   // 하단은 바텀시트가 가리므로 여유를 더 준다
+    this.syncPins();
+  }
+
+  loadStores() {
+    // 가까운 순 40곳만 받으면 핀이 전부 제주시청 주변에 뭉쳐서 지도가 안 읽힌다.
+    // 섬 전체를 받아온 뒤 격자로 솎아내 고르게 흩뿌린다.
+    // precise=true → 가까운 순 상위 10곳만 카카오모빌리티 길찾기로 실제 도로
+    // 소요시간을 잰다. 200곳 전부 호출하면 쿼터가 순식간에 녹고 응답도 느려진다.
+    // 결과는 route_cache 에 좌표 100m 단위로 캐시되므로 재조회는 공짜다.
+    const q = 'place_type=cafe&limit=200&sort=reward&precise=true&precise_top=10'
+            + '&lat=33.4996&lng=126.5312&radius_km=80';
+    return call('/api/cafes?' + q).then(data => {
+      if (!data.items.length) return;
+
+      STORES = spread(data.items.map(toStore), 40);
+      SAVED_LIVE = STORES.slice(0, 7).map((s, i) => ({
+        id: s.id, name: s.name, reward: s.reward, crowd: crowdOf(s),
+        meta: s.meta, status: s.status, urgent: s.urgent,
+        savedAt: '최근 조회',
+      }));
+
+      // 더미 id('s1','s2'…)를 가리키던 상태를 실제 id로 옮긴다.
+      // 안 하면 store()가 매번 첫 매장으로 폴백해서 엉뚱한 곳이 열린다.
+      this.setState({
+        live: true,
+        totalCount: data.total,
+        selected: STORES[0].id,
+        reviewStore: (STORES.find(s => s.reward > 0) || STORES[0]).id,
+        savedIds: STORES.slice(0, 4).map(s => s.id),
+        expanded: null,
+        focus: null,
+      });
+      this.fitToStores();     // 새로 받은 매장이 전부 화면에 들어오게
+    }).catch(err => {
+      console.warn('[백엔드 미연결] 목업 데이터로 표시합니다:', err.message);
+    });
+  }
+
+  visible() {
+    const a = this.state.active;
+    return STORES.filter(s => a.every(f => s.filters.includes(f)));
+  }
+  store(id) { return STORES.find(s => s.id === id) || STORES[0]; }
+  pick(id) {
+    this.setState({ selected: id, expanded: this.state.expanded === id ? null : id });
+    const list = this.listRef.current;
+    if (list) {
+      const i = this.visible().findIndex(s => s.id === id);
+      if (i >= 0) requestAnimationFrame(() => { list.scrollTop = Math.max(0, i * 130 - 8); });
+    }
+  }
+  signIn(provider) {
+    if (this.state.signing) return;
+    this.setState({ signing: provider });
+
+    // Supabase 가 없으면(설정 누락·오프라인) 예전처럼 가짜 로그인으로 넘어간다.
+    // 발표 중 네트워크가 끊겨도 화면 흐름은 보여줄 수 있어야 한다.
+    if (!SB) {
+      clearTimeout(this._authT);
+      this._authT = setTimeout(
+        () => this.setState({ loggedIn: true, provider, signing: '' }), 1100);
+      return;
+    }
+
+    SB.auth.signInWithOAuth({
+      provider: provider,                       // 'google' | 'kakao'
+      options: { redirectTo: window.location.href },
+    }).then(r => {
+      // 성공하면 페이지가 OAuth 창으로 넘어가므로 여기 아래는 실패 경로다.
+      if (r.error) this.setState({ signing: '', authError: r.error.message });
+    });
+  }
+
+  /* 로그인 상태를 백엔드와 맞춘다. 최초 로그인이면 users 행이 여기서 생성된다. */
+  syncMe() {
+    return call('/api/auth/me').then(me => {
+      this.setState({
+        loggedIn: true,
+        provider: me.provider || '',
+        signing: '',
+        userId: me.id,
+        nickname: me.nickname,
+        points: me.point_balance,
+      });
+      return call('/api/users/' + me.id + '/points').then(p => {
+        this.setState({
+          reviewCount: p.review_count,
+          ledger: p.history.length ? p.history.map(h => ({
+            id: 'L' + h.id,
+            title: h.reason,
+            sub: (h.created_at || '').slice(0, 10) + (h.amount > 0 ? ' · 적립' : ' · 사용'),
+            amount: h.amount,
+            kind: h.amount > 0 ? (h.amount > 500 ? 'reward' : 'plain') : 'spend',
+          })) : BASE_LEDGER,
+        });
+      }).catch(() => {});
+    }).catch(() => { this.setState({ signing: '' }); });
+  }
+  cashback() {
+    if (this.state.receipt !== 'ok') return 0;
+    // 서버가 내려준 값을 우선 쓴다. 요율이 바뀌어도 화면과 지급액이 어긋나지 않는다.
+    if (this.state.receiptCashback != null) return this.state.receiptCashback;
+    return Math.round(this.state.receiptAmount * 0.02);
+  }
+  earned() {
+    const s = this.store(this.state.reviewStore);
+    // 실데이터일 때는 서버가 내려준 적립금(reward)이 이미 정책 전액이다.
+    // 목업 시절 공식(+100 등)을 덧붙이면 실제 지급액과 화면이 어긋난다.
+    if (s.cafeId) return (s.reward || 500) + this.cashback();
+    const catBonus = Object.keys(this.state.cats).length === CATS.length ? 100 : 0;
+    return (s.reward || 100) + 100 + catBonus + this.cashback();
+  }
+  /* 영수증 인증 — 사진을 백엔드로 올려 CLOVA OCR 로 금액·매장명을 읽는다.
+     CLOVA Secret 은 서버에만 있으므로 프론트는 우리 API 만 부른다. */
+  scan(source) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    // 모바일에서 '카메라 촬영'을 누르면 앨범 대신 카메라가 바로 열리게 한다
+    if (source && source.indexOf('카메라') >= 0) input.capture = 'environment';
+
+    input.onchange = () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      this.setState({ receipt: 'scanning', receiptSource: source, receiptError: '' });
+
+      const store = this.store(this.state.reviewStore);
+      const fd = new FormData();
+      fd.append('file', file);
+      if (store && store.cafeId) fd.append('cafe_id', String(store.cafeId));
+
+      fetch(API + '/api/receipts', { method: 'POST', body: fd })
+        .then(res => res.json().then(b => ({ ok: res.ok, status: res.status, body: b })))
+        .then(({ ok, status, body }) => {
+          if (!ok) {
+            // 422 = 다시 찍으면 해결됨 / 503 = 서버·설정 문제
+            // FastAPI 의 유효성 오류는 detail 이 배열(객체 목록)로 온다.
+            // 그대로 찍으면 사용자 화면에 JSON 덩어리가 노출된다.
+            const d = body.detail;
+            const msg = typeof d === 'string' ? d
+              : Array.isArray(d) ? (d[0] && d[0].msg ? d[0].msg : '요청 형식이 올바르지 않아요')
+              : '영수증 인식에 실패했어요';
+            this.setState({
+              receipt: 'none',
+              receiptError: status === 503
+                ? msg + ' (관리자 확인 필요)'
+                : msg,
+            });
+            return;
+          }
+          this.setState({
+            receipt: 'ok',
+            receiptAmount: body.total_price,
+            receiptStore: body.store_name || '',
+            receiptMatched: body.store_matched,
+            receiptCashback: body.cashback,
+            receiptError: body.store_matched === false ? body.message : '',
+          });
+        })
+        .catch(err => this.setState({
+          receipt: 'none',
+          receiptError: '업로드에 실패했어요: ' + err.message,
+        }));
+    };
+
+    input.click();
+  }
+  submit() {
+    // 영수증은 캐시백 조건일 뿐, 리뷰를 막지 않는다.
+    // (예전엔 여기서 조용히 return 해서 '버튼을 눌러도 아무 일도 안 나는' 상태였다)
+    if (this.state.rating === 0 || this.state.text.trim().length < 5) {
+      this.setState({ submitError: '별점과 후기(5자 이상)를 입력해 주세요' });
+      return;
+    }
+    if (this._posting) return;
+
+    const s = this.store(this.state.reviewStore);
+
+    // 실제 매장이 아니면(백엔드 미연결) 예전처럼 화면상으로만 처리한다.
+    if (!s.cafeId) return this.finishReview(s, this.earned());
+
+    this._posting = true;
+    // 태그는 체크한 카테고리 응답을 그대로 보낸다 — 나중에 카공 정보 제보로 이어진다.
+    const tags = Object.keys(this.state.cats).map(k => this.state.cats[k]).filter(Boolean);
+
+    call('/api/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        cafe_id: s.cafeId,
+        rating: this.state.rating,
+        content: this.state.text,
+        tags: tags,
+      }),
+    }).then(r => {
+      this._posting = false;
+      // 적립금은 프론트가 계산하지 않는다. 서버가 정책대로 계산한 값을 그대로 쓴다.
+      this.finishReview(s, r.earned_point, r.point_balance, r.headline);
+      this.loadStores();     // 리뷰가 달렸으니 희소성 보너스가 줄어든다 → 목록 갱신
+    }).catch(err => {
+      this._posting = false;
+      // 409(이미 작성함), 401(로그인 필요) 등 이유가 사용자에게 보여야 한다.
+      // alert 은 목업 화면 밖으로 튀어나와 시연에서 어색하므로 화면 안에 띄운다.
+      this.setState({ submitError: err.message });
+    });
+  }
+
+  finishReview(s, gain, balance, headline) {
+    this.setState({
+      done: true,
+      submitError: '',
+      points: balance != null ? balance : this.state.points + gain,
+      month: this.state.month + gain,
+      reviewCount: this.state.reviewCount + 1,
+      lastEarned: gain,
+      ledger: [{
+        id: 'n' + Date.now(),
+        title: s.name + ' 리뷰',
+        sub: headline || ('방금 전 · ' + (s.reward ? '외곽 보너스 포함' : '일반 매장')),
+        amount: gain,
+        kind: s.reward ? 'reward' : 'plain',
+      }].concat(this.state.ledger),
+    });
+  }
+
+  renderVals() {
+    const st = this.state, vis = this.visible(), sel = st.selected, exp = st.expanded;
+    const active = st.active, full = st.sheet === 'full';
+    const rs = this.store(st.reviewStore);
+    const savedList = (SAVED_LIVE || SAVED).filter(v => {
+      const match = STORES.find(s => s.name === v.name);
+      return !match || st.savedIds.includes(match.id);
+    });
+    const hasReceipt = st.receipt === 'ok';
+    const ready = st.rating > 0 && st.text.trim().length >= 5;
+    const panel = (on) => `position:absolute;z-index:50;inset:0;display:flex;flex-direction:column;background:#fdf8ef;transform:translateX(${on ? 0 : 100}%);opacity:${on ? 1 : 0};pointer-events:${on ? 'auto' : 'none'};transition:transform .34s cubic-bezier(.2,.8,.2,1),opacity .2s`;
+    const tab = (on) => `flex:1;padding:12px;border:none;border-radius:999px;font:700 13px/1 Pretendard,sans-serif;cursor:pointer;background:${on ? INK : '#fff'};color:${on ? '#fff' : '#a79c8a'};box-shadow:0 2px 8px rgba(120,90,40,.09)`;
+
+    return {
+      count: vis.length,
+      sheetTitle: st.focus ? this.store(st.focus).name : vis.length + '곳',
+      sheetSub: st.focus ? '선택한 매장' : (active.length ? active.join(' · ') : '전체'),
+      backBtn: `width:32px;height:32px;flex:none;border:none;border-radius:999px;background:#fdf8ef;display:${st.focus ? 'flex' : 'none'};align-items:center;justify-content:center;cursor:pointer`,
+      clearFocus: () => this.setState({ focus: null }),
+      sortStyle: `display:${st.focus ? 'none' : 'flex'};align-items:center;gap:6px;padding:7px 11px;background:#fae6c1;border-radius:999px`,
+      listRef: this.listRef,
+      nickname: '지현 · 런케이션 3주차',
+      email: st.provider === 'kakao' ? 'jihyun.k@kakao.com' : 'jihyun.k@gmail.com',
+      pointsLabel: st.points.toLocaleString() + 'P',
+      monthLabel: '+' + st.month.toLocaleString() + 'P',
+      reviewCount: st.reviewCount,
+      authLabel: '로그아웃',
+      logout: () => this.setState({ loggedIn: false, provider: '', signing: '', menu: false, screen: 'map', focus: null }),
+      loginStyle: `position:absolute;z-index:70;inset:0;display:flex;flex-direction:column;background:#fdf8ef;transform:translateY(${st.loggedIn ? -100 : 0}%);opacity:${st.loggedIn ? 0 : 1};pointer-events:${st.loggedIn ? 'none' : 'auto'};transition:transform .5s cubic-bezier(.6,.05,.2,1),opacity .3s .12s`,
+      loginPoints: [
+        { text: '"여유롭게 2시간" 원터치 필터' },
+        { text: '외곽 매장 리뷰 시 최대 1,200P 적립' },
+        { text: '적립금은 탐나는전으로 출금' },
+      ],
+      loginKakao: () => this.signIn('kakao'),
+      loginGoogle: () => this.signIn('google'),
+      kakaoLabel: st.signing === 'kakao' ? '카카오 연결 중…' : '카카오로 계속하기',
+      googleLabel: st.signing === 'google' ? 'Google 연결 중…' : 'Google로 계속하기',
+      kakaoBtn: `display:flex;align-items:center;gap:10px;padding:17px 18px;border:none;border-radius:16px;background:#FEE500;color:#3d1d1d;font:800 14.5px/1 Pretendard,sans-serif;cursor:pointer;opacity:${st.signing && st.signing !== 'kakao' ? .5 : 1};box-shadow:0 6px 16px rgba(180,150,0,.2)`,
+      googleBtn: `display:flex;align-items:center;gap:10px;padding:17px 18px;border:1.5px solid #eadfcd;border-radius:16px;background:#fff;color:#3d372f;font:800 14.5px/1 Pretendard,sans-serif;cursor:pointer;opacity:${st.signing && st.signing !== 'google' ? .5 : 1};box-shadow:0 4px 14px rgba(120,90,40,.1)`,
+      recenter: () => this.setState({ selected: 's1', sheet: 'peek', focus: null }),
+      savedStyle: panel(st.screen === 'saved'),
+      savedCount: savedList.length,
+      saved: savedList.map(v => {
+        const c = CROWD[v.crowd] || CROWD.mid;
+        return {
+          name: v.name, meta: v.meta, status: v.status, savedAt: v.savedAt,
+          open: () => this.setState({ screen: 'map', focus: STORES.some(s => s.name === v.name) ? (STORES.find(s => s.name === v.name) || {}).id : null, sheet: 'full' }),
+          dot: `width:9px;height:9px;flex:none;border-radius:50%;background:${v.reward ? GREEN : BLUE}`,
+          crowdStyle: `display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:${c.bg};color:${c.color};font:700 10px/1 Pretendard,sans-serif;white-space:nowrap`,
+          crowdDot: `width:5px;height:5px;border-radius:50%;background:${c.color}`,
+          crowd: '지금 ' + c.label,
+          point: v.reward ? '+' + v.reward.toLocaleString() + 'P' : '',
+          pointStyle: v.reward ? `padding:6px 9px;border-radius:999px;background:${GREEN};color:#fff;font:800 12px/1 Pretendard,sans-serif;white-space:nowrap` : 'display:none',
+          statusStyle: `font:700 12px/1 Pretendard,sans-serif;color:${v.urgent ? WARN : '#3f8f5f'}`,
+        };
+      }),
+      openWithdraw: () => this.setState({ withdraw: true }),
+      closeWithdraw: () => this.setState({ withdraw: false }),
+      wdScrim: `position:absolute;z-index:59;inset:0;background:rgba(45,38,28,.45);opacity:${st.withdraw ? 1 : 0};pointer-events:${st.withdraw ? 'auto' : 'none'};transition:opacity .28s`,
+      wdSheet: `position:absolute;z-index:60;left:0;right:0;bottom:0;background:#fff;border-radius:26px 26px 0 0;padding-bottom:14px;box-shadow:0 -10px 34px rgba(120,90,40,.22);transform:translateY(${st.withdraw ? 0 : 110}%);transition:transform .38s cubic-bezier(.2,.9,.25,1)`,
+      wdOptions: [5000, 10000, st.points].map((v, i) => ({
+        label: i === 2 ? '전액' : v.toLocaleString() + 'P',
+        pick: () => this.setState({ wdAmount: v }),
+        style: `flex:1;padding:13px 8px;border:1.5px solid ${st.wdAmount === v ? ORANGE : '#f0e8da'};border-radius:14px;background:${st.wdAmount === v ? '#fff7ec' : '#fff'};color:${st.wdAmount === v ? '#a35d04' : '#a79c8a'};font:700 13px/1 Pretendard,sans-serif;cursor:pointer`,
+      })),
+      wdAmountLabel: st.wdAmount.toLocaleString() + '원',
+      wdRestLabel: Math.max(0, st.points - st.wdAmount).toLocaleString() + 'P',
+      wdBtnLabel: st.wdAmount > st.points ? '잔액이 부족해요' : st.wdAmount.toLocaleString() + '원 탐나는전으로 받기',
+      wdBtn: `margin-top:16px;width:100%;padding:17px;border:none;border-radius:999px;font:800 14.5px/1 Pretendard,sans-serif;cursor:pointer;background:${st.wdAmount > st.points || st.wdAmount < 1000 ? '#efe6d6' : ORANGE};color:${st.wdAmount > st.points || st.wdAmount < 1000 ? '#c0b5a1' : '#fff'};box-shadow:${st.wdAmount > st.points || st.wdAmount < 1000 ? 'none' : '0 8px 20px rgba(247,135,8,.3)'}`,
+      doWithdraw: () => {
+        if (st.wdAmount > st.points || st.wdAmount < 1000) return;
+        this.setState({
+          withdraw: false,
+          points: st.points - st.wdAmount,
+          ledger: [{ id: 'w' + Date.now(), title: '탐나는전 출금', sub: '방금 전 · 제주 지역화폐 충전', amount: -st.wdAmount, kind: 'spend' }].concat(st.ledger),
+        });
+      },
+      cats: CATS.map(c => ({
+        q: c.q,
+        opts: c.opts.map(label => {
+          const on = st.cats[c.id] === label;
+          return {
+            label,
+            pick: () => this.setState({ cats: { ...st.cats, [c.id]: label } }),
+            style: `padding:9px 13px;border:1.5px solid ${on ? ORANGE : '#f0e8da'};border-radius:999px;background:${on ? ORANGE : '#fff'};color:${on ? '#fff' : '#6b6255'};font:700 12px/1 Pretendard,sans-serif;cursor:pointer;transition:all .16s`,
+          };
+        }),
+      })),
+      catProgress: Object.keys(st.cats).length + '/' + CATS.length + ' 선택 · 모두 채우면 +100P',
+      toggleSheet: () => this.setState({ sheet: full ? 'peek' : 'full' }),
+      openMenu: () => this.setState({ menu: true }),
+      closeMenu: () => this.setState({ menu: false }),
+      backToMap: () => this.setState({ screen: 'map' }),
+      goWallet: () => this.setState({ screen: 'wallet', menu: false, done: false }),
+      closeDone: () => this.setState({ done: false, screen: 'map', rating: 0, text: '' }),
+      tabLedger: () => this.setState({ walletTab: 'ledger' }),
+      tabReviews: () => this.setState({ walletTab: 'reviews' }),
+      tabLedgerStyle: tab(st.walletTab === 'ledger'),
+      tabReviewsStyle: tab(st.walletTab === 'reviews'),
+      toggleAlarm: () => this.setState({ alarm: !st.alarm }),
+      alarmTrack: `width:50px;height:30px;border-radius:999px;flex:none;cursor:pointer;background:${st.alarm ? ORANGE : '#e7ddcb'};display:flex;align-items:center;padding:3px;box-sizing:border-box;transition:background .2s`,
+      alarmKnob: `width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.18);transform:translateX(${st.alarm ? 20 : 0}px);transition:transform .2s cubic-bezier(.2,.8,.2,1)`,
+
+      legendStyle: `position:absolute;z-index:10;left:14px;top:${full ? 348 : 508}px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.95);border-radius:999px;padding:8px 13px;box-shadow:0 4px 14px rgba(120,90,40,.14);transition:top .34s cubic-bezier(.2,.8,.2,1)`,
+      locBtn: `position:absolute;z-index:10;right:14px;top:${full ? 292 : 452}px;width:46px;height:46px;background:#fff;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(120,90,40,.16);transition:top .34s cubic-bezier(.2,.8,.2,1)`,
+      sheetStyle: `position:absolute;z-index:20;left:0;right:0;bottom:0;height:${full ? 620 : 302}px;display:flex;flex-direction:column;background:#fff;border-radius:26px 26px 0 0;box-shadow:0 -8px 30px rgba(120,90,40,.16);transition:height .34s cubic-bezier(.2,.8,.2,1)`,
+
+      scrimStyle: `position:absolute;z-index:39;inset:0;background:rgba(45,38,28,.4);opacity:${st.menu ? 1 : 0};pointer-events:${st.menu ? 'auto' : 'none'};transition:opacity .28s`,
+      drawerStyle: `position:absolute;z-index:40;top:0;bottom:0;left:0;width:300px;display:flex;flex-direction:column;background:#fff;border-radius:0 26px 26px 0;box-shadow:14px 0 34px rgba(120,90,40,.2);transform:translateX(${st.menu ? 0 : -100}%);transition:transform .34s cubic-bezier(.2,.8,.2,1)`,
+      menuRows: [
+        { label: '내 적립금', value: st.points.toLocaleString() + 'P', color: ORANGE, go: () => this.setState({ screen: 'wallet', menu: false }) },
+        { label: '리뷰 작성 현황', value: st.reviewCount + '개', color: GREEN, go: () => this.setState({ screen: 'wallet', walletTab: 'reviews', menu: false }) },
+        { label: '계정 설정', value: '프로필 · 닉네임', color: BLUE, go: () => this.setState({ screen: 'account', menu: false }) },
+        { label: '저장한 매장', value: savedList.length + '곳', color: '#c0b5a1', go: () => this.setState({ screen: 'saved', menu: false }) },
+      ].map(r => ({ ...r, icon: `width:8px;height:8px;border-radius:50%;flex:none;background:${r.color}` })),
+
+      accountRows: [
+        { label: '닉네임', value: '지현', action: '변경' },
+        { label: '연동 메일', value: st.provider === 'kakao' ? 'jihyun.k@kakao.com' : 'jihyun.k@gmail.com', action: '변경' },
+        { label: '로그인', value: st.provider === 'kakao' ? '카카오 계정 연결됨' : 'Google 계정 연결됨', action: '관리' },
+        { label: '체류 유형', value: '런케이션 · 장기 체류', action: '변경' },
+      ],
+
+      chips: CHIPS.map(label => {
+        const on = active.includes(label);
+        return {
+          label,
+          style: `flex:none;padding:10px 15px;border:1.5px solid ${on ? ORANGE : 'rgba(255,255,255,0)'};border-radius:999px;background:${on ? ORANGE : '#fff'};color:${on ? '#fff' : '#6b6255'};font:700 12.5px/1 Pretendard,sans-serif;white-space:nowrap;cursor:pointer;box-shadow:${on ? '0 4px 12px rgba(247,135,8,.32)' : '0 3px 10px rgba(120,90,40,.13)'};transition:all .18s`,
+          hover: on ? 'background:#d97505;border-color:#d97505' : `background:${BEIGE}`,
+          toggle: () => this.setState({ active: on ? active.filter(c => c !== label) : active.concat(label), expanded: null, focus: null }),
+        };
+      }),
+
+      // 지도가 안 뜬 이유를 화면에 보여준다. 콘솔만 찍으면 아무도 안 본다.
+      mapWarn: st.mapError
+        ? 'position:absolute;z-index:8;left:14px;right:14px;top:118px;padding:10px 12px;'
+          + 'border-radius:12px;background:rgba(226,98,47,.94);color:#fff;'
+          + 'font:700 11.5px/1.5 Pretendard,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18)'
+        : 'display:none',
+      mapWarnText: st.mapError === 'KAKAO_JS_KEY 미설정'
+        ? '지도 미연결 · .env 의 KAKAO_JS_KEY 를 채우고 서버를 재시작하세요'
+        : '지도 미연결 · ' + (st.mapError || '') + ' (카카오 콘솔에 도메인 등록 확인)',
+
+      // 내 위치. 지도가 켜져 있으면 투영 좌표, 아니면 목업의 원래 자리.
+      meDot: `position:absolute;z-index:4;left:${(this._me ? this._me.x : 196) - 7}px;`
+        + `top:${(this._me ? this._me.y : 566) - 7}px;width:14px;height:14px;`
+        + 'background:#2f6df6;border:3px solid #fff;border-radius:50%;'
+        + 'box-shadow:0 2px 6px rgba(0,0,0,.25)',
+      meRing: `position:absolute;z-index:3;left:${(this._me ? this._me.x : 196) - 13}px;`
+        + `top:${(this._me ? this._me.y : 566) - 13}px;width:26px;height:26px;`
+        + 'border-radius:50%;background:#2f6df6;animation:ping 2.2s ease-out infinite',
+
+      markers: vis.map(s => {
+        const isSel = s.id === sel, color = s.reward ? GREEN : BLUE;
+        return {
+          name: s.name,
+          select: () => this.setState({ focus: s.id, selected: s.id, expanded: s.id, sheet: 'full' }),
+          badgeText: s.reward ? '리뷰 +' + s.reward.toLocaleString() + 'P' : '',
+          wrap: `position:absolute;left:${s.x}px;top:${s.y}px;transform:translate(-50%,-100%) scale(${isSel ? 1.12 : 1});transform-origin:50% 100%;transition:transform .22s cubic-bezier(.2,.8,.2,1);cursor:pointer;z-index:${isSel ? 6 : 3};display:flex;flex-direction:column;align-items:center`,
+          badge: s.reward ? `margin-bottom:4px;padding:4px 9px;border-radius:999px;background:${GREEN};color:#fff;font:800 10.5px/1 Pretendard,sans-serif;white-space:nowrap;box-shadow:0 3px 8px rgba(23,160,106,.35)` : 'display:none',
+          pin: `width:38px;height:38px;border-radius:50%;background:${color};border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(60,50,30,.26)${isSel ? `;outline:3px solid ${ORANGE};outline-offset:2px` : ''}`,
+          tail: 'width:0;height:0;margin-top:-3px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff',
+          label: `margin-top:3px;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.94);font:700 10.5px/1.2 Pretendard,sans-serif;color:${INK};white-space:nowrap;box-shadow:0 2px 6px rgba(120,90,40,.14)`,
+        };
+      }),
+
+      cards: (st.focus ? vis.filter(s => s.id === st.focus) : vis).map((s, i) => ({
+        id: s.id, name: s.name, meta: s.meta, status: s.status, walk: s.walk, tag: s.tag,
+        seat: s.seat, plug: s.plug, close: s.close, why: s.why,
+        rank: String(i + 1),
+        crowd: (s.distHot != null ? '추정 ' : '지금 ') + CROWD[crowdOf(s)].label,
+        saveFill: st.savedIds.includes(s.id) ? ORANGE : 'none',
+        saveStroke: st.savedIds.includes(s.id) ? ORANGE : '#c0b5a1',
+        saveBtn: `margin-top:2px;width:34px;height:34px;border:1.5px solid ${st.savedIds.includes(s.id) ? '#fae6c1' : '#f0e8da'};border-radius:12px;background:${st.savedIds.includes(s.id) ? '#fff7ec' : '#fff'};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s`,
+        toggleSave: (e) => { if (e) e.stopPropagation(); this.setState({ savedIds: st.savedIds.includes(s.id) ? st.savedIds.filter(x => x !== s.id) : st.savedIds.concat(s.id) }); },
+        crowdStyle: `display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:${CROWD[crowdOf(s)].bg};color:${CROWD[crowdOf(s)].color};font:700 10px/1 Pretendard,sans-serif;white-space:nowrap`,
+        crowdDot: `width:5px;height:5px;border-radius:50%;background:${CROWD[crowdOf(s)].color}`,
+        point: s.reward ? '+' + s.reward.toLocaleString() + 'P' : '',
+        select: () => this.pick(s.id),
+        review: (e) => { if (e) e.stopPropagation(); this.setState({ screen: 'review', reviewStore: s.id, rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '' }); },
+        rowStyle: `padding:15px 16px;border-radius:18px;cursor:pointer;background:${s.id === sel ? '#fffaf1' : '#fff'};box-shadow:${s.id === sel ? '0 0 0 1.5px ' + ORANGE + ', 0 6px 16px rgba(247,135,8,.14)' : '0 2px 10px rgba(120,90,40,.09)'};transition:box-shadow .2s,background .2s`,
+        thumb: `width:36px;height:36px;flex:none;border-radius:12px;background:${s.reward ? '#e6f4ec' : BEIGE};display:flex;align-items:center;justify-content:center;font:800 13px/1 Pretendard,sans-serif;color:${s.reward ? '#0f7a50' : '#a35d04'}`,
+        dot: `width:9px;height:9px;flex:none;border-radius:50%;background:${s.reward ? GREEN : BLUE}`,
+        tagStyle: s.tag ? `padding:4px 8px;border-radius:999px;background:${s.reward ? '#e6f4ec' : BEIGE};color:${s.reward ? '#0f7a50' : '#a35d04'};font:700 10px/1 Pretendard,sans-serif` : 'display:none',
+        statusStyle: `margin-top:7px;font:700 12.5px/1 Pretendard,sans-serif;color:${s.urgent ? WARN : '#3f8f5f'}`,
+        pointStyle: s.reward ? `padding:7px 10px;border-radius:999px;background:${GREEN};color:#fff;font:800 13px/1 Pretendard,sans-serif;white-space:nowrap;box-shadow:0 3px 10px rgba(23,160,106,.28)` : 'display:none',
+        expandStyle: exp === s.id ? 'margin-top:14px' : 'display:none',
+      })),
+
+      reviewStyle: panel(st.screen === 'review'),
+      walletStyle: panel(st.screen === 'wallet'),
+      accountStyle: panel(st.screen === 'account'),
+      reviewName: rs.name,
+      reviewMeta: rs.meta,
+      reviewDot: `width:10px;height:10px;border-radius:50%;background:${rs.reward ? GREEN : BLUE}`,
+      rewardBanner: `margin-top:16px;padding:15px 16px;border-radius:18px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:${rs.reward ? GREEN : BEIGE};color:${rs.reward ? '#fff' : '#a35d04'};box-shadow:${rs.reward ? '0 6px 16px rgba(23,160,106,.24)' : 'none'}`,
+      rewardAmount: '+' + this.earned().toLocaleString() + 'P',
+      bannerTitle: rs.reward ? '외곽 소외 매장 리뷰 보너스' : '리뷰 작성 보너스',
+      bannerSub: rs.reward
+        ? '리뷰 12개 미만 외곽 매장 · 사진 첨부 시 추가 100P'
+        : '리뷰 100P + 사진 첨부 100P + 결제 2% 캐시백',
+      stars: [1,2,3,4,5].map(n => ({
+        fill: n <= st.rating ? ORANGE : '#fff',
+        stroke: n <= st.rating ? ORANGE : '#e7ddcb',
+        set: () => this.setState({ rating: n }),
+      })),
+      ratingLabel: RATINGS[st.rating] || '탭해서 별점 주기',
+      text: st.text,
+      onText: (e) => this.setState({ text: e.target.value }),
+      quickTags: QUICK.map(label => ({
+        label,
+        add: () => this.setState({ text: (st.text ? st.text.replace(/\s*$/, ' ') : '') + label + '.' }),
+        style: 'flex:none;padding:9px 13px;border:1.5px solid #f0e8da;border-radius:999px;background:#fff;font:600 12px/1 Pretendard,sans-serif;color:#6b6255;white-space:nowrap;cursor:pointer',
+      })),
+      shootReceipt: () => this.scan('카메라 촬영'),
+      uploadReceipt: () => this.scan('파일 업로드'),
+      resetReceipt: () => this.setState({ receipt: 'none', receiptSource: '' }),
+      receiptSourceText: st.receiptSource || '이미지',
+      // 인식 결과/오류를 사용자에게 그대로 보여준다. 조용히 실패하면 왜 안 되는지 모른다.
+      receiptNote: st.receiptError
+        ? 'margin-top:8px;padding:9px 11px;border-radius:10px;background:#fdeee7;'
+          + 'color:#9a3412;font:700 11.5px/1.55 Pretendard,sans-serif'
+        : st.receiptStore
+          ? 'margin-top:8px;padding:9px 11px;border-radius:10px;background:#e6f4ec;'
+            + 'color:#0f7a50;font:700 11.5px/1.55 Pretendard,sans-serif'
+          : 'display:none',
+      receiptNoteText: st.receiptError || (st.receiptStore ? '영수증 상호: ' + st.receiptStore : ''),
+      receiptState: `padding:5px 9px;border-radius:999px;font:700 10.5px/1 Pretendard,sans-serif;background:${hasReceipt ? '#e6f4ec' : st.receipt === 'scanning' ? '#fae6c1' : '#f5efe4'};color:${hasReceipt ? '#0f7a50' : st.receipt === 'scanning' ? '#a35d04' : '#a79c8a'}`,
+      receiptStateText: hasReceipt ? '인증 완료' : st.receipt === 'scanning' ? '인식 중' : '미인증',
+      receiptIdle: st.receipt === 'none' ? '' : 'display:none',
+      receiptScan: st.receipt === 'scanning' ? 'margin-top:14px;display:flex;align-items:center;gap:12px' : 'display:none',
+      receiptOk: hasReceipt ? 'margin-top:14px' : 'display:none',
+      receiptAmountLabel: st.receiptAmount.toLocaleString() + '원',
+      cashbackLabel: '+' + this.cashback().toLocaleString() + 'P',
+      bonusLabel: rs.reward ? '외곽 매장 리뷰 보너스' : '리뷰 작성 보너스',
+      bonusAmountLabel: '+' + ((rs.reward || 100) + 100).toLocaleString() + 'P',
+      noticeStyle: `margin-top:12px;display:flex;align-items:flex-start;gap:8px;padding:12px 14px;border-radius:14px;background:${hasReceipt ? '#fdf8ef' : '#fbe3d8'};font:600 11.5px/1.5 Pretendard,sans-serif;color:${hasReceipt ? '#a79c8a' : '#c94b1e'}`,
+      noticeColor: hasReceipt ? '#c0b5a1' : '#c94b1e',
+      noticeText: hasReceipt
+        ? '적립금은 리뷰 등록 즉시 지급되며, 영수증 정보는 부정 적립 확인 용도로만 보관됩니다.'
+        : '영수증 인증을 완료해야 리뷰를 등록할 수 있어요. 결제 당일 영수증만 인정됩니다.',
+      submit: () => this.submit(),
+      submitLabel: !ready ? '별점과 후기를 입력해 주세요'
+        : '리뷰 등록하고 ' + this.earned().toLocaleString() + 'P 받기'
+          + (hasReceipt ? '' : ' (영수증 인증 시 캐시백 추가)'),
+      submitError: st.submitError || '',
+      submitNote: st.submitError
+        ? 'margin-top:10px;padding:10px 12px;border-radius:10px;background:#fdeee7;'
+          + 'color:#9a3412;font:700 12px/1.5 Pretendard,sans-serif;text-align:center'
+        : 'display:none',
+      submitStyle: `margin-top:20px;width:100%;padding:17px;border:none;border-radius:999px;font:800 14.5px/1 Pretendard,sans-serif;cursor:${ready ? 'pointer' : 'default'};background:${ready ? ORANGE : '#efe6d6'};color:${ready ? '#fff' : '#c0b5a1'};box-shadow:${ready ? '0 8px 20px rgba(247,135,8,.3)' : 'none'};transition:all .2s`,
+
+      ledger: (st.walletTab === 'ledger' ? st.ledger : st.ledger.filter(h => h.kind !== 'spend')).map(h => ({
+        title: h.title, sub: h.sub,
+        iconText: h.amount > 0 ? 'P' : '−',
+        icon: `width:34px;height:34px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font:800 12px/1 Pretendard,sans-serif;background:${h.kind === 'reward' ? '#e6f4ec' : h.kind === 'spend' ? '#f5efe4' : BEIGE};color:${h.kind === 'reward' ? '#0f7a50' : h.kind === 'spend' ? '#a79c8a' : '#a35d04'}`,
+        amount: (h.amount > 0 ? '+' : '') + h.amount.toLocaleString() + 'P',
+        amountStyle: `font:800 14px/1 Pretendard,sans-serif;white-space:nowrap;color:${h.amount > 0 ? GREEN : '#a79c8a'}`,
+      })),
+
+      doneScrim: `position:absolute;z-index:59;inset:0;background:rgba(45,38,28,.45);opacity:${st.done ? 1 : 0};pointer-events:${st.done ? 'auto' : 'none'};transition:opacity .28s`,
+      doneSheet: `position:absolute;z-index:60;left:0;right:0;bottom:0;background:#fff;border-radius:26px 26px 0 0;padding-bottom:14px;box-shadow:0 -10px 34px rgba(120,90,40,.22);transform:translateY(${st.done ? 0 : 110}%);transition:transform .38s cubic-bezier(.2,.9,.25,1)`,
+      doneLine: rs.reward ? rs.name + ' · 외곽 소외 매장 보너스가 함께 적립됐어요' : rs.name + ' · 리뷰 감사합니다',
+      doneAmount: '+' + st.lastEarned.toLocaleString() + 'P',
+    };
+  }
+}
+</script>
+</body>
+</html>

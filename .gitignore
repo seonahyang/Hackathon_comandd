@@ -1,0 +1,23 @@
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 비밀키 — 절대 커밋 금지
+.env
+.env.local
+*.pem
+
+# 로컬 DB (오프라인 폴백용 SQLite)
+*.db
+*.db-journal
+
+# 의존성
+node_modules/
+
+# 에디터 / OS
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db

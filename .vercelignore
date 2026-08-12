@@ -1,0 +1,23 @@
+# 배포 번들에서 뺄 것들. 런타임에 안 쓰는 파일은 올리지 않는다.
+
+# 로컬 전용
+.venv/
+__pycache__/
+*.pyc
+*.db
+.env
+
+# 데이터 적재 스크립트와 원본 엑셀 — 배포된 서버는 DB 를 읽기만 한다.
+# (적재는 로컬에서 scripts/ingest_iddy.py 로 미리 끝내둔다)
+scripts/
+data/
+
+# 디자인 산출물 중 런타임에 안 쓰는 것
+uploads/
+
+# 문서
+*.md
+render.yaml
+Procfile
+node_modules/
+package*.json
