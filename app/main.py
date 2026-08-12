@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -130,8 +130,8 @@ if MOCKUP.exists():
             app.mount(f"/mockup/{sub}", StaticFiles(directory=ROOT / sub), name=f"mk_{sub}")
 
     @app.get("/mockup", include_in_schema=False)
-    def mockup_redirect():
-        return RedirectResponse("/mockup/")
+    def mockup_redirect(request: Request):
+        return RedirectResponse("/mockup/" + _qs(request))
 
     # 개발 중에는 캐시를 끈다. 안 그러면 HTML 을 고쳐도 브라우저가 예전 걸 계속
     # 보여줘서 "코드는 고쳤는데 화면이 그대로"인 상황에 시간을 태운다.
@@ -152,9 +152,25 @@ if MOCKUP.exists():
         return FileResponse(ROOT / name, headers=NO_CACHE)
 
 
+def _qs(request: Request) -> str:
+    """리다이렉트할 때 쿼리스트링을 그대로 넘긴다.
+
+    이게 없으면 OAuth 로그인이 깨진다.
+    Supabase 는 인증 후 `/?code=...` 로 돌려보내는데, 쿼리를 버리고 `/mockup/` 로
+    보내면 그 code 가 사라져서 세션 교환이 아예 일어나지 않는다.
+    화면상으로는 '로그인 창이 번쩍하고 원래 화면으로 돌아오는' 것처럼 보인다.
+
+    (해시(#access_token=...)는 브라우저가 서버로 보내지 않고 리다이렉트에도
+     그대로 따라가므로 여기서 신경 쓸 필요가 없다)
+    """
+    q = request.url.query
+    return f"?{q}" if q else ""
+
+
 @app.get("/", include_in_schema=False)
-def root():
-    return RedirectResponse("/mockup/" if MOCKUP.exists() else "/ui/")
+def root(request: Request):
+    dest = "/mockup/" if MOCKUP.exists() else "/ui/"
+    return RedirectResponse(dest + _qs(request))
 
 
 @app.get("/api/meta/build", tags=["meta"], summary="지금 서버가 내보내는 프론트 파일 정보")
