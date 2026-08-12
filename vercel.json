@@ -2,13 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
 
   "functions": {
-    "api/index.py": {
+    "app/main.py": {
       "memory": 1024,
-      "maxDuration": 30
-    }
-  },
+      "maxDuration": 30,
 
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ]
+      "//": "프론트 파일(카페맵.dc.html, support.js, web/, _ds/)을 함수 번들에 넣는다.",
+      "//2": "FastAPI 가 이 파일들을 직접 읽어서 내보내므로 빠지면 화면이 404 가 된다.",
+      "//3": ".vercelignore 가 scripts/·data/·.venv 를 이미 걸러준다.",
+      "includeFiles": "**"
+    }
+  }
 }
