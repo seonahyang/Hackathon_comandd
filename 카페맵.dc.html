@@ -22,6 +22,7 @@ textarea{font-family:Pretendard,sans-serif}
 @keyframes ping{0%{transform:scale(1);opacity:.4}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
 @keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </helmet>
 <div style="min-height:100vh;box-sizing:border-box;padding:56px 48px;display:flex;gap:56px;align-items:flex-start;justify-content:center;flex-wrap:wrap">
@@ -518,6 +519,11 @@ textarea{font-family:Pretendard,sans-serif}
 </div>
 <div style="flex:1"></div>
 <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:16px">
+<div style="{{ restoreScrim }}">
+<div style="width:34px;height:34px;border-radius:50%;border:3px solid #f0e4cf;border-top-color:#f78708;animation:spin .8s linear infinite"></div>
+<div style="margin-top:14px;font:800 14px/1 Pretendard,sans-serif;color:#3d372f">로그인 중…</div>
+<div style="margin-top:6px;font:600 12px/1.5 Pretendard,sans-serif;color:#a79c8a">계정 정보를 불러오고 있어요</div>
+</div>
 <button onClick="{{ loginKakao }}" style="{{ kakaoBtn }}">
 <svg width="19" height="19" viewBox="0 0 24 24" fill="#3d1d1d"><path d="M12 3.6c-4.7 0-8.5 2.9-8.5 6.6 0 2.4 1.6 4.5 4 5.7l-1 3.6c-.1.3.2.5.5.4l4.3-2.8c.2 0 .5.1.7.1 4.7 0 8.5-3 8.5-6.9S16.7 3.6 12 3.6z"></path></svg>
 <span style="flex:1;text-align:center">{{ kakaoLabel }}</span>
@@ -829,7 +835,7 @@ class Component extends DCLogic {
   state = {
     active: [], selected: 's1', expanded: null, sheet: 'peek',
     savedIds: ['s1','s2','s4','s6'], focus: null, screen: 'map', menu: false, done: false, walletTab: 'ledger', alarm: true, loggedIn: false, provider: '', signing: '',
-    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', email: '', points: 12400, month: 2200, reviewCount: 12,
+    reviewStore: 's2', rating: 0, text: '', cats: {}, receipt: 'none', receiptSource: '', receiptAmount: 12400, receiptStore: '', receiptError: '', receiptCashback: null, receiptMatched: null, submitError: '', authNote: '', email: '', restoring: false, points: 12400, month: 2200, reviewCount: 12,
     ledger: BASE_LEDGER, lastEarned: 0, withdraw: false, wdAmount: 10000,
   };
   listRef = React.createRef();
@@ -851,6 +857,12 @@ class Component extends DCLogic {
     // 로그인 후 돌아왔을 때 URL 에 뭐가 실려왔는지 무조건 화면에 남긴다.
     // (조건부로만 띄웠더니 '아무것도 안 뜬다'가 반복돼 원인을 못 좁혔다)
     // 로그인을 아직 안 눌렀으면 표시하지 않는다.
+    // 로그인하고 막 돌아온 상태면 스피너를 먼저 띄운다.
+    // (componentDidMount 는 첫 렌더 뒤에 돌기 때문에 state 를 직접 넣는다)
+    if ((location.hash || location.search) && !this._authReturn.error) {
+      this.state.restoring = true;
+    }
+
     // Supabase 가 오류를 실어 보냈을 때만 화면에 남긴다.
     // (진단용으로 항상 띄우던 건 원인을 찾았으니 껐다)
     if (this._authReturn.error) {
@@ -906,6 +918,7 @@ class Component extends DCLogic {
       })
       .then(tk => {
         const keys = Object.keys(localStorage).filter(k => k.indexOf('sb-') === 0);
+        this.setState({ restoring: false });
         if (tk) return this.syncMe();
         if (!AUTH_REQUIRED) return this.syncMe();
         // 돌아왔는데 토큰이 없다 → 어디서 끊겼는지 그대로 보여준다
@@ -914,7 +927,10 @@ class Component extends DCLogic {
             '로그인이 완료되지 않았습니다 (저장키 ' + keys.length + '개)' });
         }
       })
-      .catch(e => this.setState({ authNote: '로그인 확인 실패: ' + e.message }));
+      .catch(e => this.setState({
+        restoring: false,          // 실패해도 스피너는 반드시 걷는다
+        authNote: '로그인 확인 실패: ' + e.message,
+      }));
 
     this.loadStores();
   }
@@ -1266,6 +1282,13 @@ class Component extends DCLogic {
       ],
       loginKakao: () => this.signIn('kakao'),
       loginGoogle: () => this.signIn('google'),
+      // 로그인하고 돌아온 직후, 세션을 확인하는 동안 덮어주는 화면.
+      // 이게 없으면 로그인 창이 잠깐 다시 보였다가 앱으로 들어가서
+      // '로그인이 안 된 건가?' 하고 한 번 더 누르게 된다.
+      restoreScrim: st.restoring
+        ? 'position:absolute;z-index:80;inset:0;background:#fdf8ef;display:flex;'
+          + 'flex-direction:column;align-items:center;justify-content:center'
+        : 'display:none',
       kakaoLabel: st.signing === 'kakao' ? '카카오 연결 중…' : '카카오로 계속하기',
       googleLabel: st.signing === 'google' ? 'Google 연결 중…' : 'Google로 계속하기',
       kakaoBtn: `display:flex;align-items:center;gap:10px;padding:17px 18px;border:none;border-radius:16px;background:#FEE500;color:#3d1d1d;font:800 14.5px/1 Pretendard,sans-serif;cursor:pointer;opacity:${st.signing && st.signing !== 'kakao' ? .5 : 1};box-shadow:0 6px 16px rgba(180,150,0,.2)`,
