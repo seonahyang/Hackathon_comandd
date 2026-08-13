@@ -343,8 +343,8 @@ textarea{font-family:Pretendard,sans-serif}
 <div style="margin-top:10px;display:flex;flex-direction:column;gap:12px">
 <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
 <div style="padding:14px 15px;border-radius:18px;background:#fff;box-shadow:0 2px 10px rgba(120,90,40,.08)">
-<div style="font:700 12.5px/1 Pretendard,sans-serif;color:#3d372f">{{ c.q }}</div>
-<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:7px">
+<div style="{{ c.qStyle }}">{{ c.q }}</div>
+<div style="{{ c.optsStyle }}">
 <sc-for list="{{ c.opts }}" as="o" hint-placeholder-count="3">
 <button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
 </sc-for>
@@ -840,7 +840,7 @@ const CROWD = { low: { label: '여유', color: '#17a06a', bg: '#e6f4ec' }, mid: 
 // '잘 모르겠어요' 를 반드시 둔다 — 모르는 사람에게 억지로 찍게 하면
 // 그 값이 그대로 오염 데이터가 되고, 판정 근거를 스스로 무너뜨린다.
 const CATS = [
-  { id: 'cagong', q: '노트북 작업하기 좋았나요?', opts: ['카공 가능','카공 불가','잘 모르겠어요'] },
+  { id: 'cagong', q: '', opts: ['카공 가능','카공 불가','잘 모르겠어요'] },
   { id: 'size', q: '매장 넓이는 어땠나요?', opts: ['협소 (10석 내외)','보통 (20~40석)','넓음 (40석 이상)','잘 모르겠어요'] },
   { id: 'plug', q: '좌석별 콘센트는 몇 구인가요?', opts: ['없음','일부 좌석','좌석당 1구','좌석당 2구 이상'] },
   { id: 'noise', q: '소음은 어떤가요?', opts: ['아주 조용','적당','조금 시끄러움','시끄러움'] },
@@ -1407,6 +1407,13 @@ class Component extends DCLogic {
       },
       cats: CATS.map(c => ({
         q: c.q,
+        // 질문 문구가 없는 항목(카공 가능/불가)은 라벨 줄을 통째로 숨기고
+        // 버튼만 남긴다. 빈 div 를 두면 그만큼 위쪽 여백이 벌어진다.
+        qStyle: c.q
+          ? 'font:700 12.5px/1 Pretendard,sans-serif;color:#3d372f'
+          : 'display:none',
+        optsStyle: (c.q ? 'margin-top:10px;' : '')
+          + 'display:flex;flex-wrap:wrap;gap:7px',
         opts: c.opts.map(label => {
           const on = st.cats[c.id] === label;
           return {

@@ -23,6 +23,22 @@ class Settings(BaseSettings):
     receipt_max_amount: int = 200_000
     cors_origins: str = "*"
 
+    # --- 생성형 AI (데이터 분류 + 비정형 시간 파싱) ---
+    # OpenAI 호환 Chat Completions 규격이면 어느 제공사든 그대로 꽂힌다.
+    # 공급사를 코드에 박지 않는 이유: 해커톤에서 키가 막히면 URL 한 줄만
+    # 바꿔서 다른 제공사로 갈아탈 수 있어야 한다.
+    ai_api_url: str = ""      # 예: https://api.openai.com/v1/chat/completions
+    ai_api_key: str = ""      # 서버 전용. 절대 프론트로 내려보내지 않는다.
+    ai_model: str = "gemini-flash-latest"
+    # gemini-2.5-flash 같은 고정 버전명은 신규 사용자에게 닫히는 일이 있다
+    # ("no longer available to new users"). -latest 별칭은 구글이 살아있는
+    # 버전으로 알아서 넘겨주므로 해커톤처럼 새로 발급한 키에 안전하다.
+    ai_timeout: float = 20.0  # Vercel 함수 상한 30초 안에서 끝나야 한다
+    # Gemini 3.x/flash-latest 계열은 답을 내기 전에 '생각'하는 데도 토큰을 쓴다.
+    # 그 몫까지 max_tokens 에 포함되므로, 낮춰두지 않으면 정작 JSON 이 잘린다.
+    # 우리 작업(분류·파싱)은 긴 추론이 필요 없어서 low 로 충분하다.
+    ai_reasoning_effort: str = "low"   # none / low / medium / high / 빈값이면 미전송
+
     # --- Supabase Auth (구글/카카오 소셜 로그인) ---
     supabase_url: str = ""          # https://xxxxx.supabase.co
     supabase_anon_key: str = ""     # 프론트에 그대로 노출되는 공개키 (RLS가 방어선)

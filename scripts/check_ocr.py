@@ -73,17 +73,10 @@ elif is_apigw:
     line(f"{WARN} APIGW 인데 경로 끝에 /document/receipt 도 /general 도 없습니다")
     line("       콘솔의 'APIGW Invoke URL' 을 끝까지 복사했는지 확인하세요.")
 elif is_legacy:
-    line(f"{NO} 구버전(legacy) 엔드포인트입니다: clovaocr-api-kr.ncloud.com/external/v1/…")
-    line("       이 주소는 '일반 OCR' 전용이라 영수증 구조화 응답이 오지 않습니다.")
-    line("       → 금액을 못 찾아서 '결제 금액을 찾지 못했습니다' 가 뜹니다.")
-    line("")
-    line("       고치는 법:")
-    line("       1. console.ncloud.com > Services > AI Services > CLOVA OCR")
-    line("       2. [도메인 생성] — 모델을 반드시 'Document OCR / 영수증' 으로")
-    line("       3. 생성된 도메인에서 [APIGW 연동] 까지 완료")
-    line("       4. 화면에 뜨는 'APIGW Invoke URL' 을 통째로 복사")
-    line("          형태: https://xxxxx.apigw.ntruss.com/custom/v1/00000/xxxx/document/receipt")
-    line("       5. 같은 화면의 'Secret Key' 를 CLOVA_OCR_SECRET 에")
+    line(f"{WARN} 구버전(legacy) 일반 OCR 엔드포인트입니다.")
+    line("       영수증 구조화 응답(storeInfo/totalPrice)은 오지 않습니다.")
+    line("       대신 우리 파서가 글자 좌표를 읽어 '합계' 옆 금액을 직접 찾습니다.")
+    line("       → 이 주소로도 동작합니다. 아래 5번에서 실제 인식률을 확인하세요.")
 else:
     line(f"{WARN} 처음 보는 형태의 URL 입니다. 콘솔 값을 다시 확인하세요.")
 
@@ -185,11 +178,11 @@ line(f"  inferResult : {image0.get('inferResult')}")
 line(f"  응답 키     : {list(image0.keys())}")
 
 if image0.get("receipt"):
-    line(f"{OK} 영수증 구조화 응답이 왔습니다 (정확도 높음)")
+    line(f"{OK} 영수증 구조화 응답 (정확도 가장 높음)")
 else:
-    line(f"{NO} 'receipt' 키가 없습니다 → 일반 OCR 도메인입니다")
-    line("       글자 조각만 와서 금액을 추측으로 찾아야 하고, 자주 실패합니다.")
-    line("       2번 항목의 안내대로 영수증 도메인을 새로 만드세요.")
+    n = len(image0.get("fields") or [])
+    line(f"{OK} 일반 OCR 응답 — 글자 조각 {n}개")
+    line("       우리 파서가 좌표로 줄을 복원해 '합계' 옆 금액을 찾습니다.")
 
 line("")
 try:
@@ -199,6 +192,13 @@ try:
     line(f"      상호      : {parsed.get('store_name')}")
     line(f"      결제금액  : {parsed.get('total_price')}")
     line(f"      결제일시  : {parsed.get('paid_at')}")
+    if parsed.get("total_reason"):
+        line(f"      인식 근거 : {parsed['total_reason']}")
+    if parsed.get("model") == "general":
+        line("")
+        line("  인식된 줄 (금액을 잘못 잡았다면 여기서 원인이 보입니다):")
+        for ln in (parsed.get("_lines") or [])[:15]:
+            line(f"      {ln}")
 except Exception as e:  # noqa: BLE001
     line(f"{NO} 파싱 실패: {type(e).__name__}: {e}")
     line("\n  응답 앞부분 (원인 파악용):")

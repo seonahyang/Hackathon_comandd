@@ -10,6 +10,8 @@ class RewardPreview(BaseModel):
     multiplier: float
     is_boosted: bool
     badge: str | None = None
+    region_state: str | None = None
+    reason: str | None = None        # 왜 이만큼인지 한 줄
 
 
 class StayInfo(BaseModel):
@@ -91,6 +93,9 @@ class CafeOut(BaseModel):
     rating_avg: float
     dist_to_hotspot_km: float
     is_remote: bool
+    region_state: str | None = None      # 과밀 / 보통 / 침체 / 미분류
+    region_index: float | None = None    # 0.0(침체) ~ 0.92(과밀)
+    region_rank: int | None = None
 
     distance_km: float | None = None
     travel_min: int | None = None
@@ -223,3 +228,5 @@ class ReviewCreatedOut(BaseModel):
     # 내 투표로 이 매장 판정이 어떻게 바뀌었는지. 등록 완료 화면에 그대로 띄운다.
     # (response_model 에 선언하지 않으면 FastAPI 가 응답에서 걸러낸다)
     cagong_verdict: CagongVerdict | None = None
+    # AI 가 본문에서 읽어낸 것. dropped 에 '근거가 원문에 없어 버린 필드'가 담긴다.
+    ai: dict | None = None

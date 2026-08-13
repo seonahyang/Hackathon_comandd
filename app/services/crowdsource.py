@@ -98,8 +98,14 @@ def aggregate_field(db: Session, cafe: Cafe, field: str) -> dict:
 def submit_report(
     db: Session, cafe: Cafe, user: User, field: str,
     value_bool: bool | None = None, value_int: int | None = None,
-    is_owner: bool = False,
+    is_owner: bool = False, award_point: bool = True,
 ) -> dict:
+    """제보 1건 접수 → 합의 집계 → 필요하면 적립.
+
+    award_point=False 는 리뷰 본문에서 AI 가 뽑아낸 제보에 쓴다. 리뷰 적립금을
+    이미 받았는데 같은 글에서 제보 적립까지 또 주면 이중 지급이 된다.
+    표는 그대로 세되 돈만 안 주는 것이다.
+    """
     if field not in ALL_FIELDS:
         raise ValueError(f"지원하지 않는 항목: {field} (가능: {', '.join(ALL_FIELDS)})")
 
@@ -123,7 +129,7 @@ def submit_report(
     # 적립 (같은 항목 재제보는 포인트 없음 — 어뷰징 방지)
     earned = 0
     breakdown = []
-    if not already_mine:
+    if not already_mine and award_point:
         earned = REPORT_POINT
         breakdown.append({"label": f"{FIELD_LABEL[field]} 정보 제보", "point": REPORT_POINT})
         if first_ever:

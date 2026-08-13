@@ -93,8 +93,19 @@ class Cafe(Base):
     summary: Mapped[str | None] = mapped_column(Text)           # 관광공사 소개문
 
     # 오버투어리즘 지표
+    # dist_to_hotspot_km 은 이제 화면 표시용이다. 적립금은 아래 지역 지수로 계산한다.
+    # 이유: 침체 지역 9곳 중 5곳(삼도1동·이도1동·용담1동·화북동·봉개동)이 제주시
+    # 원도심이다. 거리 기준으로는 '핫스팟과 가까움'이라 보너스가 안 붙는데, 정작
+    # 소비액은 가장 낮은 곳들이다. 거리는 소외의 대리지표로 쓰기에 부정확하다.
     dist_to_hotspot_km: Mapped[float] = mapped_column(Float, default=0.0)
     is_remote: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+
+    # 지역 활성도 — 내비게이션 검색량 + 방문객 수 + 추정 소비액의 종합 지수.
+    # 적립금 차등의 유일한 근거다. (data/region_index.csv)
+    region_state: Mapped[str] = mapped_column(String(8), default="보통", index=True)
+    # 과밀 / 보통 / 침체 / 미분류
+    region_index: Mapped[float | None] = mapped_column(Float)   # 0.0(침체) ~ 0.92(과밀)
+    region_rank: Mapped[int | None] = mapped_column(Integer)    # 42개 지역 중 순위
 
     # 집계
     review_count: Mapped[int] = mapped_column(Integer, default=0, index=True)

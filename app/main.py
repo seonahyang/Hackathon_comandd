@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from .config import ENV_PROBLEMS, settings
 from .core.geo import HOTSPOTS
 from .database import IS_SERVERLESS, Base, SessionLocal, engine
-from .routers import auth, cafes, receipts, reports, reviews, stats, users
+from .routers import ai, auth, cafes, receipts, reports, reviews, stats, users
 
 # 설정 문제를 서버 뜰 때 눈에 띄게 알린다. 조용히 넘어가면 화면이 이상해진 뒤에야
 # 알게 되고, 그때는 원인이 .env 라는 걸 떠올리기 어렵다.
@@ -82,6 +82,7 @@ app.include_router(reports.router)
 app.include_router(receipts.router)
 app.include_router(users.router)
 app.include_router(stats.router)
+app.include_router(ai.router)
 
 
 @app.get("/health", tags=["meta"])

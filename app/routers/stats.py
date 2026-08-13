@@ -16,25 +16,38 @@ def dispersion(db: Session = Depends(get_db)):
     rows = db.execute(
         select(
             Cafe.district,
+            Cafe.region_state,
             func.count(Cafe.id),
             func.sum(Cafe.review_count),
-            func.avg(Cafe.dist_to_hotspot_km),
-        ).group_by(Cafe.district)
+            func.avg(Cafe.region_index),
+        ).group_by(Cafe.district, Cafe.region_state)
     ).all()
 
     out = []
-    for district, cafe_cnt, review_sum, avg_dist in rows:
-        avg_reward = calc_reward(float(avg_dist or 0),
-                                 int((review_sum or 0) / max(cafe_cnt, 1)))["total"]
+    for district, state, cafe_cnt, review_sum, avg_idx in rows:
+        r = calc_reward(float(avg_idx) if avg_idx is not None else None)
         out.append({
             "district": district or "미분류",
+            "region_state": state or "미분류",
+            "region_index": round(float(avg_idx), 3) if avg_idx is not None else None,
             "cafe_count": cafe_cnt,
             "review_count": int(review_sum or 0),
-            "avg_dist_to_hotspot_km": round(float(avg_dist or 0), 2),
-            "avg_reward_point": avg_reward,
+            "reward_point": r["total"],
+            "reward_reason": r["region_tier"],
         })
-    out.sort(key=lambda x: -x["avg_reward_point"])
-    return {"regions": out}
+    out.sort(key=lambda x: -x["reward_point"])
+
+    # 지역 상태별 요약 — 발표 슬라이드에 이 세 줄이면 충분하다
+    summary = {}
+    for state in ("과밀", "보통", "침체", "미분류"):
+        sub = [o for o in out if o["region_state"] == state]
+        if sub:
+            summary[state] = {
+                "districts": len(sub),
+                "cafes": sum(o["cafe_count"] for o in sub),
+                "reward_point": sub[0]["reward_point"],
+            }
+    return {"summary": summary, "regions": out}
 
 
 @router.get("/summary", summary="전체 요약 (대시보드 상단 카드)")
@@ -69,13 +82,15 @@ def summary(db: Session = Depends(get_db)):
 @router.get("/underrated", summary="소외 매장 TOP N (적립금 높은 순)")
 def underrated(db: Session = Depends(get_db), limit: int = 10):
     rows = db.scalars(
-        select(Cafe).where(Cafe.is_remote.is_(True)).order_by(Cafe.review_count.asc()).limit(limit * 3)
+        select(Cafe).where(Cafe.is_remote.is_(True))
+        .order_by(Cafe.region_index.asc().nullslast()).limit(limit * 3)
     ).all()
     items = [{
         "id": c.id, "name": c.name, "district": c.district,
+        "region_state": c.region_state, "region_index": c.region_index,
         "review_count": c.review_count,
         "dist_to_hotspot_km": c.dist_to_hotspot_km,
-        "reward_point": calc_reward(c.dist_to_hotspot_km, c.review_count)["total"],
+        "reward_point": calc_reward(c.region_index)["total"],
         "lat": c.lat, "lng": c.lng,
     } for c in rows]
     items.sort(key=lambda x: -x["reward_point"])
