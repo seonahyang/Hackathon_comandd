@@ -41,10 +41,10 @@ def dispersion(db: Session = Depends(get_db)):
 def summary(db: Session = Depends(get_db)):
     total = db.scalar(select(func.count(Cafe.id))) or 0
     remote = db.scalar(select(func.count(Cafe.id)).where(Cafe.is_remote.is_(True))) or 0
-    cagong = db.scalar(
-        select(func.count(Cafe.id)).where(
-            Cafe.laptop_ok.is_(True), Cafe.has_power.is_(True), Cafe.has_wifi.is_(True)
-        )
+    # 카공 가능 = 리뷰 투표에서 '가능'이 '불가'보다 많은 매장
+    cagong = db.scalar(select(func.count(Cafe.id)).where(Cafe.cagong_ok.is_(True))) or 0
+    cagong_voted = db.scalar(
+        select(func.count(Cafe.id)).where((Cafe.cagong_yes + Cafe.cagong_no) > 0)
     ) or 0
     reviews = db.scalar(select(func.count(Review.id))) or 0
     remote_reviews = db.scalar(
@@ -58,6 +58,7 @@ def summary(db: Session = Depends(get_db)):
         "remote_cafes": remote,
         "remote_ratio": round(remote / total * 100, 1) if total else 0,
         "cagong_cafes": cagong,
+        "cagong_voted_cafes": cagong_voted,   # 투표가 1건이라도 달린 매장
         "total_reviews": reviews,
         "remote_reviews": remote_reviews,
         "remote_review_ratio": round(remote_reviews / reviews * 100, 1) if reviews else 0,

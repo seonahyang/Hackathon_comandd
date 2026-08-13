@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..auth import get_current_user
+from ..core import cagong as cg
 from ..core.rewards import calc_reward
 from ..database import get_db
 from ..models import Cafe, PointLedger, Review, User
@@ -18,6 +19,7 @@ def _to_out(r: Review) -> dict:
         "id": r.id, "cafe_id": r.cafe_id, "user_id": r.user_id,
         "rating": r.rating, "content": r.content,
         "tags": [t for t in (r.tags or "").split(",") if t],
+        "cagong_vote": r.cagong_vote, "size_vote": r.size_vote,
         "earned_point": r.earned_point, "created_at": r.created_at,
     }
 
@@ -50,10 +52,15 @@ def create_review(
     review = Review(
         cafe_id=cafe.id, user_id=user.id, rating=body.rating,
         content=body.content, tags=",".join(body.tags),
+        cagong_vote=body.cagong_vote, size_vote=body.size_vote,
         earned_point=reward["total"],
     )
     db.add(review)
     db.flush()
+
+    # 카공 판정 재집계 — 이 리뷰의 투표가 매장 판정을 바꿀 수 있다.
+    # flush() 뒤에 불러야 방금 넣은 리뷰가 집계에 포함된다.
+    verdict = cg.recount(db, cafe)
 
     total_score = (cafe.rating_avg or 0) * (cafe.review_count or 0) + body.rating
     cafe.review_count = (cafe.review_count or 0) + 1
@@ -78,6 +85,9 @@ def create_review(
         "breakdown": reward["items"],
         "cafe_review_count": cafe.review_count,
         "cafe_rating_avg": cafe.rating_avg,
+        # 내 투표로 이 매장 판정이 어떻게 바뀌었는지 바로 돌려준다.
+        # "당신의 리뷰로 이 카페가 카공 가능 매장이 됐어요" 를 화면에 띄우기 위함.
+        "cagong_verdict": verdict,
     }
 
 

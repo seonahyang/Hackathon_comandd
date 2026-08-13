@@ -28,7 +28,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pandas as pd  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 
-from app.core.cagong import guess_cagong  # noqa: E402
 from app.core.geo import classify_remote, in_jeju  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.models import Cafe  # noqa: E402
@@ -179,7 +178,10 @@ def build_rows(df: pd.DataFrame) -> tuple[list[dict], dict]:
         place_type = classify(name, summary)
         stats[place_type] += 1
 
-        cagong = guess_cagong(name, summary[:60])
+        # 카공 정보는 공공데이터에 존재하지 않는다(콘센트 0/719, 와이파이 0/719).
+        # 예전에는 브랜드명으로 추측해 채웠지만, 근거 없는 값을 넣는 순간
+        # "공공데이터엔 없다"는 우리 주장 자체가 거짓이 된다. 비워둔다.
+        # 실제 값은 리뷰 투표(cagong_vote)와 항목별 제보로만 채워진다.
 
         rows.append({
             "license_no": parse_license(r.get("인허가번호")),
@@ -209,7 +211,19 @@ def build_rows(df: pd.DataFrame) -> tuple[list[dict], dict]:
             # '소외 매장' 판정도 그래야 의미가 맞는다.
             "review_count": 0,
             "rating_avg": 0.0,
-            **cagong,
+            "laptop_ok": None,
+            "has_power": None,
+            "has_wifi": None,
+            "quiet": None,
+            "seat_count": None,
+            "cagong_source": "unknown",
+            "cagong_yes": 0,
+            "cagong_no": 0,
+            "cagong_ok": False,
+            "size_small": 0,
+            "size_medium": 0,
+            "size_large": 0,
+            "size_label": None,
         })
 
     return rows, stats

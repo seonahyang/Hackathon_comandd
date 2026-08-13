@@ -16,8 +16,11 @@ router = APIRouter(prefix="/api/cafes", tags=["cafes"])
 
 def base_fields(cafe: Cafe) -> dict:
     d = {c.name: getattr(cafe, c.name) for c in Cafe.__table__.columns}
+    # cagong_ok 는 DB 컬럼이지만, 혹시 재집계 전 상태여도 응답은 항상 맞게 나가도록
+    # 여기서 한 번 더 계산해 덮어쓴다.
     d["cagong_ok"] = cg.is_cagong_ok(cafe)
     d["cagong_score"] = cg.cagong_score(cafe)
+    d["cagong_verdict"] = cg.verdict(cafe)
     d["reward"] = rewards.preview_reward(cafe)
     return d
 
@@ -63,7 +66,14 @@ def list_cafes(
         description="cafe(기본) / restaurant / all. 카공 추천은 cafe, "
                     "오버투어리즘 분산 통계는 all",
     ),
-    cagong: bool = Query(False, description="핵심기능3: '카공 가능'만 보기"),
+    cagong: bool = Query(
+        False,
+        description="핵심기능3: '카공 가능'만 보기 (리뷰 투표 가능 > 불가인 매장)",
+    ),
+    size: str | None = Query(
+        None, pattern="^(small|medium|large)$",
+        description="매장 넓이 — small(협소) / medium(보통) / large(넓음)",
+    ),
     stay_hours: float | None = Query(None, description="핵심기능2: '여유롭게 N시간' (기본 2)"),
     travel_mode: str = Query("car", pattern="^(car|walk)$", description="이동수단"),
     travel_min: int | None = Query(None, description="이동시간 고정값(분). 지정 시 계산 안 함"),
@@ -97,8 +107,11 @@ def list_cafes(
     if place_type != "all":
         stmt = stmt.where(Cafe.place_type == place_type)
     if cagong:
-        stmt = stmt.where(Cafe.laptop_ok.is_(True), Cafe.has_power.is_(True),
-                          Cafe.has_wifi.is_(True))
+        # 판정 근거는 리뷰 투표 하나다. 다녀온 사람들의 다수결(yes > no).
+        # laptop_ok/has_power 같은 항목별 제보는 상세 정보일 뿐 필터를 좌우하지 않는다.
+        stmt = stmt.where(Cafe.cagong_ok.is_(True))
+    if size:
+        stmt = stmt.where(Cafe.size_label == size)
     if remote_only:
         stmt = stmt.where(Cafe.is_remote.is_(True))
     if hours_verified:
@@ -146,7 +159,8 @@ def list_cafes(
         "now": now_dt.strftime("%Y-%m-%d %H:%M"),
         "filters_applied": {
             "place_type": place_type,
-            "cagong": cagong, "stay_hours": stay_hours, "open_now": open_now,
+            "cagong": cagong, "size": size,
+            "stay_hours": stay_hours, "open_now": open_now,
             "remote_only": remote_only, "hours_verified": hours_verified,
             "radius_km": radius_km if lat else None,
             "travel_mode": travel_mode, "precise": precise,
@@ -189,7 +203,10 @@ def update_flags(cafe_id: int, body: CafeFlagsIn, db: Session = Depends(get_db))
     for key, value in payload.items():
         setattr(cafe, key, value)
     if any(k in payload for k in ("laptop_ok", "has_power", "has_wifi", "quiet", "seat_count")):
-        cafe.cagong_source = source
+        # 점주 인증만 리뷰 투표보다 우선한다. 일반 관리자 수정이 투표 결과를
+        # 덮어쓰면 '다녀온 사람들의 판단'이라는 근거가 무너진다.
+        if source == "owner" or cafe.cagong_source == "unknown":
+            cafe.cagong_source = source
     if any(k in payload for k in ("open_time", "close_time", "closed_days")):
         cafe.hours_source = "manual"
         cafe.hours_confidence = "high" if source == "owner" else "medium"

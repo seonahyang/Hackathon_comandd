@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -22,6 +23,20 @@ class StayInfo(BaseModel):
     last_call_at: str | None = None
     break_time: str | None = None   # "15:00~17:00" — 있으면 프론트에 배지로 표시
     sit_from: str | None = None     # 브레이크 후 앉을 수 있는 시각
+
+
+class CagongVerdict(BaseModel):
+    """리뷰 투표 기반 카공 판정 결과. 프론트 뱃지·문구를 이걸로 그린다."""
+    state: str              # ok(가능) / no(불가) / tie(동률) / unknown(투표없음)
+    ok: bool
+    yes: int
+    no: int
+    total_votes: int
+    message: str            # 그대로 화면에 노출 가능한 문구
+    size: str | None = None         # small / medium / large
+    size_label: str | None = None   # 협소 / 보통 / 넓음
+    size_votes: dict = {}
+    source: str
 
 
 class CafeOut(BaseModel):
@@ -51,14 +66,26 @@ class CafeOut(BaseModel):
     has_toilet: bool | None = None
     summary: str | None = None
 
-    laptop_ok: bool
-    has_power: bool
-    has_wifi: bool
-    quiet: bool
-    seat_count: int
+    # None = 모름. 프론트는 '아님'과 다르게 표시해야 한다.
+    laptop_ok: bool | None = None
+    has_power: bool | None = None
+    has_wifi: bool | None = None
+    quiet: bool | None = None
+    seat_count: int | None = None
     cagong_source: str
-    cagong_ok: bool
+
+    # 리뷰 투표 기반 판정
+    cagong_yes: int = 0
+    cagong_no: int = 0
+    cagong_ok: bool = False
     cagong_score: int
+    cagong_verdict: CagongVerdict | None = None
+
+    # 매장 넓이
+    size_label: str | None = None
+    size_small: int = 0
+    size_medium: int = 0
+    size_large: int = 0
 
     review_count: int
     rating_avg: float
@@ -139,6 +166,15 @@ class ReviewCreate(BaseModel):
     content: str = ""
     tags: list[str] = []
 
+    # 카공 투표 — 이 값이 매장의 '카공 가능' 판정을 만든다.
+    # 안 보내면(None) 투표하지 않은 것으로 처리한다. 강제하지 않는다.
+    cagong_vote: bool | None = Field(
+        default=None, description="True=카공 가능 / False=카공 불가 / 미입력=모름"
+    )
+    size_vote: Literal["small", "medium", "large"] | None = Field(
+        default=None, description="매장 넓이 — small(협소) / medium(보통) / large(넓음)"
+    )
+
 
 class ReviewOut(BaseModel):
     id: int
@@ -147,6 +183,8 @@ class ReviewOut(BaseModel):
     rating: int
     content: str
     tags: list[str] = []
+    cagong_vote: bool | None = None
+    size_vote: str | None = None
     earned_point: int
     created_at: datetime | None = None
     model_config = {"from_attributes": True}

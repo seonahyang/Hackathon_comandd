@@ -64,13 +64,28 @@ class Cafe(Base):
     hours_text: Mapped[str | None] = mapped_column(String(255))       # 파싱 전 원문 보존
     hours_confidence: Mapped[str] = mapped_column(String(8), default="low")  # high/medium/low
 
-    # 카공 환경
-    laptop_ok: Mapped[bool] = mapped_column(Boolean, default=False)     # 노트북 사용 허용
-    has_power: Mapped[bool] = mapped_column(Boolean, default=False)     # 콘센트
-    has_wifi: Mapped[bool] = mapped_column(Boolean, default=False)      # 와이파이
-    quiet: Mapped[bool] = mapped_column(Boolean, default=False)         # 조용한 분위기
-    seat_count: Mapped[int] = mapped_column(Integer, default=0)
-    cagong_source: Mapped[str] = mapped_column(String(12), default="estimated")  # estimated/user/owner
+    # 카공 환경 — 항목별 부가정보. 필터 판정은 아래 '리뷰 투표'가 담당한다.
+    # None = 모름. '아님(False)'과 반드시 구분한다. 근거 없이 채우지 않는다.
+    laptop_ok: Mapped[bool | None] = mapped_column(Boolean)     # 노트북 사용 허용
+    has_power: Mapped[bool | None] = mapped_column(Boolean)     # 콘센트
+    has_wifi: Mapped[bool | None] = mapped_column(Boolean)      # 와이파이
+    quiet: Mapped[bool | None] = mapped_column(Boolean)         # 조용한 분위기
+    seat_count: Mapped[int | None] = mapped_column(Integer)
+    cagong_source: Mapped[str] = mapped_column(String(12), default="unknown")
+    # unknown(정보없음) / review(리뷰 투표) / user(제보) / owner(점주 인증)
+
+    # 카공 판정 — 리뷰 투표 집계. '카공 가능' 필터의 유일한 근거.
+    cagong_yes: Mapped[int] = mapped_column(Integer, default=0)   # 가능 투표 수
+    cagong_no: Mapped[int] = mapped_column(Integer, default=0)    # 불가 투표 수
+    cagong_ok: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    # cagong_ok 는 yes > no 의 결과를 저장한 것. 지도 쿼리에서 DB 인덱스로
+    # 걸러야 해서 파생값이지만 컬럼으로 둔다.
+
+    # 매장 넓이 — 좌석수를 숫자로 물으면 아무도 모른다. 체감 3단계로 받는다.
+    size_small: Mapped[int] = mapped_column(Integer, default=0)
+    size_medium: Mapped[int] = mapped_column(Integer, default=0)
+    size_large: Mapped[int] = mapped_column(Integer, default=0)
+    size_label: Mapped[str | None] = mapped_column(String(8))    # small/medium/large
 
     # 공공데이터에서 그대로 오는 부가정보 (크라우드소싱 대상 아님)
     parking: Mapped[bool | None] = mapped_column(Boolean)       # 주차 가능
@@ -119,6 +134,12 @@ class Review(Base):
     rating: Mapped[int] = mapped_column(Integer, default=5)
     content: Mapped[str] = mapped_column(Text, default="")
     tags: Mapped[str] = mapped_column(String(255), default="")  # "콘센트많음,조용함"
+
+    # 카공 투표 — 이 두 값이 매장의 '카공 가능' 판정을 만든다.
+    # None 을 허용하는 이유: 리뷰는 쓰되 카공 여부는 모르겠다는 사람을 강제로
+    # 찍게 만들면, 그 찍은 값이 그대로 오염 데이터가 된다.
+    cagong_vote: Mapped[bool | None] = mapped_column(Boolean)   # True=가능 / False=불가
+    size_vote: Mapped[str | None] = mapped_column(String(8))    # small/medium/large
 
     earned_point: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

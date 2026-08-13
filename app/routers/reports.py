@@ -55,14 +55,15 @@ def wanted(
     place_type: str = Query("cafe", pattern="^(cafe|restaurant|all)$"),
 ):
     """
-    카공 정보가 추정치(estimated)로만 남아있는 외곽 매장을 우선 노출한다.
+    카공 정보가 아직 비어있는(unknown) 외곽 매장을 우선 노출한다.
     '이 카페 정보를 채우면 300P' 같은 미션 카드로 쓰면 리텐션이 붙는다.
 
     공공데이터에는 콘센트·와이파이·노트북 허용 정보가 아예 없다(719건 전부 공란).
     그래서 서비스 초기에는 이 목록이 곧 전체 매장이고, 제보가 쌓이면서 줄어든다.
     이 감소 곡선 자체가 크라우드소싱이 작동한다는 증거가 된다.
     """
-    stmt = select(Cafe).where(Cafe.cagong_source == "estimated")
+    # 리뷰 투표도 제보도 아직 없는 매장. 이 목록이 곧 '채워야 할 빈칸'이다.
+    stmt = select(Cafe).where(Cafe.cagong_source == "unknown")
     if place_type != "all":
         stmt = stmt.where(Cafe.place_type == place_type)
 

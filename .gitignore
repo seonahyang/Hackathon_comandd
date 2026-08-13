@@ -21,3 +21,6 @@ node_modules/
 .idea/
 .vscode/
 Thumbs.db
+
+# 카공 판정 변경 전 원본 백업 (로컬 전용)
+_backup_before_cagong/

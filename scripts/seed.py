@@ -99,7 +99,7 @@ def main():
                 quiet=bool(quiet), seat_count=seats,
                 # 리뷰가 아직 없는 매장 = 아무도 안 가봤으니 카공 정보도 추정치 상태.
                 # /api/reports/wanted 가 이런 매장을 제보 미션으로 노출한다.
-                cagong_source="estimated" if reviews < 3 else "owner",
+                cagong_source="unknown" if reviews < 3 else "owner",
                 review_count=reviews, rating_avg=rating,
                 dist_to_hotspot_km=dist, is_remote=remote,
             ))

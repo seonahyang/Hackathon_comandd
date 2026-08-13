@@ -85,7 +85,9 @@ def aggregate_field(db: Session, cafe: Cafe, field: str) -> dict:
             return {"field": field, "applied": False, "reason": "tie", "votes": len(vals)}
 
     setattr(cafe, field, value)
-    if cafe.cagong_source != "owner":
+    # 리뷰 투표(review)와 점주 인증(owner)이 제보(user)보다 우선한다.
+    # 항목별 제보는 '왜 가능한지'를 설명하는 부가정보지 판정 근거가 아니다.
+    if cafe.cagong_source == "unknown":
         cafe.cagong_source = "user"
     for r in reports:
         r.applied = True
@@ -177,7 +179,7 @@ def coverage(db: Session, cafe: Cafe) -> dict:
             "field": f, "label": FIELD_LABEL[f],
             "value": getattr(cafe, f), "report_count": n,
             "verified": cafe.cagong_source in ("owner", "user") and n > 0,
-            "needs_report": n < MIN_VOTES and cafe.cagong_source == "estimated",
+            "needs_report": n < MIN_VOTES and getattr(cafe, field) is None,
         })
     filled = sum(1 for f in fields if not f["needs_report"])
     return {

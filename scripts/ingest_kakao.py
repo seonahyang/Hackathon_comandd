@@ -26,7 +26,6 @@ import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.config import settings                     # noqa: E402
-from app.core.cagong import guess_cagong            # noqa: E402
 from app.core.geo import JEJU_BBOX, classify_remote # noqa: E402
 from app.database import Base, SessionLocal, engine # noqa: E402
 from app.models import Cafe                         # noqa: E402
@@ -117,8 +116,9 @@ def upsert(db, doc: dict) -> bool:
     cafe.dist_to_hotspot_km, cafe.is_remote = dist, remote
 
     if is_new:  # 이미 제보(user/owner)로 갱신된 건 덮어쓰지 않음
-        for k, v in guess_cagong(name, category).items():
-            setattr(cafe, k, v)
+        # 카공 정보는 추측하지 않는다. 브랜드명으로 콘센트 유무를 단정하던
+        # 로직은 제거했다. 값은 리뷰 투표와 제보로만 채워진다.
+        cafe.cagong_source = "unknown"
         for k, v in guess_hours(name, category).items():
             setattr(cafe, k, v)
     return is_new
