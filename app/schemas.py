@@ -220,3 +220,6 @@ class ReviewCreatedOut(BaseModel):
     breakdown: list[dict]
     cafe_review_count: int
     cafe_rating_avg: float
+    # 내 투표로 이 매장 판정이 어떻게 바뀌었는지. 등록 완료 화면에 그대로 띄운다.
+    # (response_model 에 선언하지 않으면 FastAPI 가 응답에서 걸러낸다)
+    cagong_verdict: CagongVerdict | None = None

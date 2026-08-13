@@ -47,18 +47,36 @@ def is_configured() -> bool:
     return bool(settings.clova_ocr_url and settings.clova_ocr_secret)
 
 
-def endpoints() -> list[str]:
-    """시도할 URL 목록. https 를 먼저, 실패하면 원본(http)으로.
+# 한 번 성공한 주소를 기억한다. 서버리스에서도 같은 인스턴스가 살아있는 동안은
+# 유지되므로, 두 번째 요청부터는 실패하는 주소에 커넥트 타임아웃을 다시 낭비하지
+# 않는다. Vercel 함수 상한이 30초라 이 낭비가 곧 504 로 이어진다.
+_WORKING_URL: str | None = None
 
-    시크릿이 헤더에 실려 나가므로 https 가 바람직하다. 그래서 http 로 적혀
-    있어도 일단 https 로 올려서 시도한다.
-    다만 구버전 엔드포인트(clovaocr-api-kr.ncloud.com/external/v1/…)는 443 을
-    안 열어둬서 https 로 붙으면 ConnectTimeout 이 난다. 그때는 원본으로 돌아간다.
+
+def endpoints() -> list[str]:
+    """시도할 URL 목록.
+
+    시크릿이 헤더에 실려 나가므로 https 가 바람직하다. 다만 주소 종류에 따라
+    성공 확률이 다르므로 순서를 다르게 잡는다.
+
+      APIGW(*.apigw.ntruss.com)  → https 가 정상. https 를 먼저.
+      구버전(clovaocr-api-kr…)   → 443 이 안 열려 있는 경우가 많다. 적힌 대로 먼저.
+
+    무턱대고 https 를 먼저 찔러보면 구버전 주소에서 매번 커넥트 타임아웃만큼
+    시간을 버리고, 그게 Vercel 30초 상한을 밀어 올린다.
     """
     u = settings.clova_ocr_url.strip()
-    if u.startswith("http://"):
-        return ["https://" + u[len("http://"):], u]
-    return [u]
+
+    if _WORKING_URL:                      # 이미 되는 주소를 안다
+        return [_WORKING_URL]
+
+    if not u.startswith("http://"):
+        return [u]
+
+    https = "https://" + u[len("http://"):]
+    if "apigw.ntruss.com" in u:
+        return [https, u]                 # APIGW 는 https 가 정답
+    return [u, https]                     # 구버전은 적힌 대로 먼저
 
 
 def endpoint() -> str:
@@ -285,11 +303,13 @@ def scan_receipt(image_bytes: bytes, filename: str = "receipt.jpg") -> dict:
                 url,
                 headers={"X-OCR-SECRET": settings.clova_ocr_secret},
                 json=body,
-                # connect 는 짧게(5초), 읽기는 길게(25초).
-                # OCR 자체는 느리지만 '연결'이 5초 안에 안 되면 그 주소는 안 열려
-                # 있는 것이므로 빨리 포기하고 다음 후보로 넘어가는 게 낫다.
-                timeout=httpx.Timeout(25.0, connect=5.0),
+                # Vercel 함수 상한이 30 초다. 후보를 두 번 시도해도 그 안에
+                # 끝나야 504 대신 우리 에러 메시지가 사용자에게 간다.
+                #   1차 실패(연결 4초) + 2차 읽기 20초 = 24초 < 30초
+                timeout=httpx.Timeout(20.0, connect=4.0),
             )
+            global _WORKING_URL
+            _WORKING_URL = url            # 다음 요청부터는 이 주소만 쓴다
             break
         except Exception as e:  # noqa: BLE001
             last_err = e
@@ -322,6 +342,16 @@ def scan_receipt(image_bytes: bytes, filename: str = "receipt.jpg") -> dict:
         parsed = parse_general(payload)
         parsed["model"] = "general"          # 글자만 온 것을 우리가 해석 — 추정치
     if not parsed["total_price"]:
+        # 원인이 둘인데 안내가 하나면 사용자가 사진만 계속 다시 찍는다.
+        #   general 모델 → 도메인 설정 문제. 다시 찍어도 절대 안 된다.
+        #   receipt 모델 → 진짜 사진 문제. 다시 찍으면 된다.
+        if parsed["model"] == "general":
+            logger.error(
+                "일반 OCR 도메인이라 금액 구조화가 안 됩니다. "
+                "콘솔에서 'Document OCR - 영수증' 도메인을 만들고 Invoke URL 을 바꾸세요. "
+                "현재 URL: %s", settings.clova_ocr_url)
+            raise OCRUnreadable(
+                "영수증 인식 설정이 완료되지 않았습니다. 금액을 직접 입력해 주세요")
         raise OCRUnreadable("결제 금액을 찾지 못했습니다. 금액이 보이게 다시 찍어주세요")
 
     # 오인식 방어. 카페 영수증이 20만원을 넘을 일은 사실상 없다.
